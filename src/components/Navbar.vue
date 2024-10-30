@@ -90,6 +90,11 @@ document.addEventListener('DOMContentLoaded', function () {
       buttonId: 'mega-menu-dropdown-buttontb1',
       dropdownId: 'mega-menu-dropdowntb1',
       containerId: 'dropdown-container-website'
+    },
+    {
+      buttonId: 'mega-menu-dropdown-buttontb1',
+      dropdownId: 'mega-menu-dropdowntb1',
+      containerId: 'dropdown-container-website'
     }
   ];
 
@@ -106,13 +111,85 @@ document.addEventListener('DOMContentLoaded', function () {
       dropdownMenu.classList.add('block');  // Show dropdown
     });
 
-    // Hide dropdown 2 seconds after leaving the button or dropdown
+    // Hide dropdown when mouse leaves the container
     dropdownContainer.addEventListener('mouseleave', function () {
       hideTimeout = setTimeout(function () {
         dropdownMenu.classList.remove('block');
         dropdownMenu.classList.add('hidden');
-      }, 500);  // 2 second delay before hiding
+      }, 500);  // Short delay before hiding
     });
+
+    // Toggle dropdown on button click
+    dropdownButton.addEventListener('click', function (event) {
+      event.stopPropagation();  // Prevent the click from propagating to document
+      const isHidden = dropdownMenu.classList.contains('hidden');
+      closeAllDropdowns();  // Close all dropdowns before toggling the current one
+
+      if (isHidden) {
+        dropdownMenu.classList.remove('hidden');
+        dropdownMenu.classList.add('block');  // Open dropdown if it's hidden
+      } else {
+        dropdownMenu.classList.remove('block');
+        dropdownMenu.classList.add('hidden');  // Close dropdown if it's visible
+      }
+    });
+
+    // Hide dropdown when clicking on any dropdown item
+    dropdownMenu.querySelectorAll('a').forEach((item) => {
+      item.addEventListener('click', function () {
+        dropdownMenu.classList.remove('block');
+        dropdownMenu.classList.add('hidden');  // Close dropdown when clicking on menu item
+      });
+    });
+  });
+
+  // Close all dropdowns when clicking outside
+  document.addEventListener('click', function () {
+    closeAllDropdowns();
+  });
+
+  // Function to close all dropdowns
+  function closeAllDropdowns() {
+    dropdownContainers.forEach(({ dropdownId }) => {
+      const dropdownMenu = document.getElementById(dropdownId);
+      dropdownMenu.classList.remove('block');
+      dropdownMenu.classList.add('hidden');
+    });
+  }
+});
+
+// active========================
+document.addEventListener('DOMContentLoaded', function () {
+  // Software dropdown button and menu
+  const dropdownBtnSoftware = document.getElementById('mega-menu-dropdown-buttontb');
+  const dropdownMenuSoftware = document.getElementById('mega-menu-dropdowntb');
+
+  // Website dropdown button and menu
+  const dropdownBtnWebsite = document.getElementById('mega-menu-dropdown-buttontb1');
+  const dropdownMenuWebsite = document.getElementById('mega-menu-dropdowntb1');
+
+  // Toggle dropdown and active state for Software menu
+  dropdownBtnSoftware.addEventListener('click', function () {
+    dropdownMenuSoftware.classList.toggle('hidden');
+    dropdownBtnSoftware.classList.toggle('active');
+  });
+
+  // Toggle dropdown and active state for Website menu
+  dropdownBtnWebsite.addEventListener('click', function () {
+    dropdownMenuWebsite.classList.toggle('hidden');
+    dropdownBtnWebsite.classList.toggle('active');
+  });
+
+  // Close dropdown when clicked outside
+  document.addEventListener('click', function (event) {
+    if (!dropdownBtnSoftware.contains(event.target) && !dropdownMenuSoftware.contains(event.target)) {
+      dropdownMenuSoftware.classList.add('hidden');
+      dropdownBtnSoftware.classList.remove('active');
+    }
+    if (!dropdownBtnWebsite.contains(event.target) && !dropdownMenuWebsite.contains(event.target)) {
+      dropdownMenuWebsite.classList.add('hidden');
+      dropdownBtnWebsite.classList.remove('active');
+    }
   });
 });
 
@@ -174,7 +251,7 @@ const Navbar = [
           <li>
 
             <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="hover"
-              class="text-[black] hover:text-[#48a1da] text-[22px] font-[600] text-center inline-flex items-center"
+              class="router ease-in-out transition-all text-[black] hover:text-[#48a1da] text-[22px] font-[600] text-center inline-flex items-center"
               type="button">Company <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                 fill="none" viewBox="0 0 10 6">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -217,7 +294,7 @@ const Navbar = [
           <!-- Software Dropdown -->
           <li class="relative group" id="dropdown-container-software">
             <button id="mega-menu-dropdown-buttontb"
-              class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 hover:text-[#48a1da] md:p-0 lg:font-semibold lg:text-[22px]">
+              class="router ease-in-out transition-all flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 hover:text-[#48a1da] md:p-0 lg:font-semibold lg:text-[22px]">
               Software
               <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 10 6">
@@ -226,16 +303,16 @@ const Navbar = [
               </svg>
             </button>
             <div id="mega-menu-dropdowntb"
-               class="absolute z-10 grid hidden lg:w-auto lg:-ml-40 text-sm bg-black rounded-lg shadow-md transition-opacity duration-1000">
+              class="absolute z-10 grid hidden lg:w-auto lg:-ml-40 text-sm bg-[#fff] rounded-lg shadow-md duration-1000">
               <!-- Dropdown content -->
               <div class="pb-0 mx-5 text-[#000] grid grid-flow-col">
-                <div class="md:flex">
+                <div class="md:flex py-4">
                   <div v-for="(column, colIndex) in columns" :key="colIndex"
                     class="lg:w-60 lg:text-base flex-column space-y space-y-4 text-sm font-medium text-[#000] md:me-4 mb-4 md:mb-0">
                     <ul id="default-tab" data-tabs-toggle="#default-tab-content">
                       <li v-for="(menu, index) in column" :key="index" role="presentation">
                         <RouterLink :to="menu.link"
-                          class="ECommerceVue inline-block p-2 text-[#fff] hover:text-[#48a1da] font-medium w-full text-justify"
+                          class="ECommerceVue inline-block leading-6 py-[5px] text-gray-700 hover:text-[#48a1da] font-[600] w-full text-justify"
                           id="Business-tab1" data-tabs-target="#Business1" type="button" role="tab"
                           aria-controls="Business" aria-selected="false">
                           {{ menu.name }}
@@ -251,7 +328,7 @@ const Navbar = [
           <!-- Website Dropdown -->
           <li class="relative group" id="dropdown-container-website">
             <button id="mega-menu-dropdown-buttontb1"
-              class="flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 hover:text-[#48a1da] md:p-0 lg:font-semibold lg:text-[22px]">
+              class="router ease-in-out flex items-center justify-between w-full py-2 px-3 font-medium text-gray-900 border-b border-gray-100 md:w-auto hover:bg-gray-50 md:hover:bg-transparent md:border-0 hover:text-[#48a1da] md:p-0 lg:font-semibold lg:text-[22px]">
               Website
               <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 10 6">
@@ -260,16 +337,16 @@ const Navbar = [
               </svg>
             </button>
             <div id="mega-menu-dropdowntb1"
-              class="absolute z-10 grid hidden lg:w-auto lg:ml-0 text-sm bg-black rounded-lg shadow-md transition-opacity duration-1000">
+              class="absolute z-10 grid hidden lg:w-[240px] text-sm bg-[#fff] rounded-lg shadow-md duration-1000">
               <!-- Dropdown content -->
-              <div class="p-5 pb-0 text-[#000] md:pb-5">
+              <div class="pb-0 mx-5 text-[#000] grid grid-flow-col">
                 <div class="md:flex">
                   <div v-for="(columns, colIndex) in webColumns" :key="colIndex"
-                    class="lg:w-60 lg:text-base flex-column space-y space-y-4 text-sm font-medium text-[#000] md:me-4 mb-4 md:mb-0">
+                    class="lg:w-60 lg:text-base flex-column space-y space-y-4 text-sm py-4 font-medium text-[#000] md:me-4 mb-4 md:mb-0">
                     <ul id="default-tab" data-tabs-toggle="#default-tab-content">
-                      <li v-for="(menu, index) in columns" :key="index" class="py-2" role="presentation">
+                      <li v-for="(menu, index) in columns" :key="index" class="" role="presentation">
                         <RouterLink :to="menu.link"
-                          class="ECommerceVue inline-block p-2 border-2 text-[#fff] font-medium w-full text-justify"
+                          class="ECommerceVue inline-block leading-6 py-[5px] text-gray-700 hover:text-[#48a1da] font-[600] w-full text-justify"
                           id="Business-tab1" data-tabs-target="#Business1" type="button" role="tab"
                           aria-controls="Business" aria-selected="false">
                           {{ menu.name }}
@@ -284,13 +361,13 @@ const Navbar = [
           <!-- =================================Website End========================== -->
           <li>
             <RouterLink to="/payment"
-              class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 hover:text-[#48a1da] md:p-0 font-semibold lg:text-[22px]">
+              class="router block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 hover:text-[#48a1da] md:p-0 font-semibold lg:text-[22px]">
               Payment
             </RouterLink>
           </li>
           <li>
             <RouterLink to="/blog"
-              class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 hover:text-[#48a1da] md:p-0 font-semibold lg:text-[22px]">
+              class="router block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 hover:text-[#48a1da] md:p-0 font-semibold lg:text-[22px]">
               Blog
             </RouterLink>
           </li>
@@ -308,7 +385,7 @@ const Navbar = [
         <ul>
           <li>
             <RouterLink to="/contact"
-              class="block py-4 px-5 -mt-1 text-[#fff] rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 font-semibold lg:text-lg">
+              class="router block py-4 px-5 -mt-1 text-[#fff] rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 font-semibold lg:text-lg">
               Contact
             </RouterLink>
           </li>
@@ -378,6 +455,14 @@ const Navbar = [
 
 </template>
 <style scoped>
+button.active {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.active {
+  color: #48a1da;
+}
+
 #default-tab li .ERPSolution {
   background-image: linear-gradient(to right, #ffffff 0%, #48a1da 100%);
   background-size: 200% 100%;

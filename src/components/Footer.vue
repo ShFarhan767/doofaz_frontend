@@ -127,7 +127,7 @@ const copyright = [
             <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
                 <div>
                     <h4
-                        class="lg:mt-2 lg:text-sm md:mt-1 text-sm md:text-sm lg:px-10 px-4 lg:py-4 py-4 lg:text-justify text-[#333] float-left sm:-mt-3">
+                        class="lg:mt-2 lg:text-[14px] font-medium md:mt-1 text-sm md:text-sm lg:px-10 px-4 lg:py-4 py-4 lg:text-justify text-[#000] float-left sm:-mt-3">
                         {{ copyrightarea.copyText }}
                     </h4>
                 </div>

@@ -60,20 +60,7 @@ onMounted(async () => {
                             <p class="text-md mt-3 font-medium" v-html="details.details"></p>
                         </span>
                     </span>
-                    <!-- <p class="text-md mt-3 font-medium"><i class="fa-solid fa-phone text-[#ef4444]"></i>
-                        01969912221 <span class="font-[600] text-[#48a1da]">( What'sapp )</span>
-                    </p>
-                    <p class="text-md mt-3 font-medium"><i class="fa-solid fa-phone text-[#ef4444]"></i>
-                        01969912221 <span class="font-[600] text-[#48a1da]">( Telegram )</span>
-                    </p>
-                    <a href="#" target="_blank" class="top-2 text-lg relative font-medium ">
-                        <i class="fa-brands fa-facebook-f text-[#ef4444]"></i>
-                        <span class="font-[500] text-[#000] ml-2">facebook Group</span>
-                    </a>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-envelope text-[#ef4444]"></i>
-                        <span>doofazinfo@gmail.com</span></p>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-envelope text-[#ef4444]"></i>
-                        <span>info@doofazit.com</span></p> -->
+                    
 
                 </div>
                 <div class="pt-4">
@@ -98,18 +85,18 @@ onMounted(async () => {
             <div class="form-area lg:w-[150%] lg:h-auto lg:mt-10 lg:pb-5 lg:pt-5 pb-5 px-5 pt-5 lg:-ml-20">
                 <form class="max-w-md mx-auto">
                     <div class="mb-5">
-                        <label for="Name" class="block mb-2 text-sm font-medium text-gray-900">Your
+                        <label for="Name" class="block mb-2 text-sm font-medium text-gray-900">
                             Name</label>
                         <input type="text" id="Name"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
                             placeholder="name" required />
                     </div>
                     <div class="mb-5">
-                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Your
-                            email</label>
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">
+                            Email</label>
                         <input type="email" id="email"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  w-full p-2.5"
-                            placeholder="name@flowbite.com" required />
+                            placeholder="name@Gmail.com" required />
                     </div>
 
                     <div class="mb-5">
@@ -125,12 +112,12 @@ onMounted(async () => {
                             Address</label>
                         <input type="location" id="location"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
-                            placeholder="Addresss" required />
+                            placeholder="Address" required />
                     </div>
 
                     <div class="mb-5">
                         <form class="max-w-sm mx-auto">
-                            <label for="message" class="block mb-2 text-sm font-medium text-gray-900">Your
+                            <label for="message" class="block mb-2 text-sm font-medium text-gray-900">
                                 message</label>
                             <textarea id="message" rows="4"
                                 class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
