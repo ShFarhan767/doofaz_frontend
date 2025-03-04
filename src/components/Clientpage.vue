@@ -1,5 +1,24 @@
 <script setup>
+import { ref, onMounted, watch } from 'vue';
+import axios from 'axios';
+import { BASE_URL } from '../assets/apiConfig';
 import { IMG } from '../assets/imageUrl';
+
+const data = ref(null);
+
+// Fetch the API data on mount
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}clientInfo`);
+        data.value = {
+            ...response.data,
+            data: response.data.data
+        };
+        console.log('Data Fetched Successfully:', data.value);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+});
 
 const clientPage = [
     {
@@ -56,277 +75,26 @@ const clientPage = [
     </section>
 
     <section>
-        <div class="container mx-auto px-4">
-            <div v-for="(indexs, index) in clientPage" :key="index"
-                class="grid gap-x-8 gap-y-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 mb-5">
-                <!-- ======================Feni Girls Cadet...=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-3 pb-2">
-                        <img :src="IMG + indexs.feniImage" alt="">
+        <div v-if="data && data.data" class="container mx-auto pb-5">
+            <div class="grid gap-x-4 gap-y-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
+                
+                <div v-for="(client, index) in data.data" :key="index"
+                    class="border lg:mt-5 rounded-[10px] flex items-center p-4 shadow-md">
+                    
+                    <!-- Image Section -->
+                    <div class="w-[70px] h-[70px] flex-shrink-0">
+                        <img :src="IMG + client.image" :alt="client.imageAltTag" class="rounded-full w-full h-full">
                     </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]"> {{ indexs.Feni }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }}</span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }}</span> </p>
-                    </div>
-                </div>
-                <!-- ======================Feni Girls Cadet...End=========================== -->
-
-                <!-- ======================Barishal Cadet ...=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-3 pb-2">
-                        <img :src="IMG +indexs.BarishalImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]"> {{ indexs.Barishal }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }}</span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }}</span> </p>
+                    
+                    <!-- Text Section -->
+                    <div class="ml-4">
+                        <h2 class="text-[22px] font-semibold text-[#48a1da]"> {{ client.name }}</h2>
+                        <p class="text-sm hover:text-[#ae00b9] font-medium text-black cursor-pointer"> {{ client.services }}</p>
                     </div>
                 </div>
-                <!-- ======================Barishal Cadet ...End=========================== -->
-
-                <!-- ======================Beacon Pharma=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG + indexs.beaconImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]"> {{ indexs.Beacon }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }}</span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }}</span> </p>
-                    </div>
-                </div>
-                <!-- ======================Beacon Pharma End=========================== -->
-
-                <!-- ======================Sylhet Cadet...=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG + indexs.sylhetImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[22px] font-semibold text-[#48a1da]"> {{ indexs.Sylhet }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }}</span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }}</span> </p>
-                    </div>
-                </div>
-                <!-- ======================Sylhet Cadet...End=========================== -->
-
-                <!-- ======================janakantho=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG + indexs.janakanthoImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]">{{ indexs.Daily }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }} </span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }} </span>
-                            <i class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"> </i>
-                            <span class="hover:text-[#ae00b9]"> {{ indexs.sms }} </span>
-                        </p>
-                    </div>
-                </div>
-                <!-- ======================janakantho End=========================== -->
-
-                <!-- ======================emc=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.emcImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]">{{ indexs.Barishal }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }} </span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }} </span>
-                            <i class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"> </i>
-                            <span class="hover:text-[#ae00b9]"> {{ indexs.sms }} </span>
-                        </p>
-                    </div>
-                </div>
-                <!-- ======================emc End=========================== -->
-
-                <!-- ======================Barishal Cadet ...=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.BarishalImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]">{{ indexs.emc }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }} </span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }} </span>
-                            <i class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"> </i>
-                            <span class="hover:text-[#ae00b9]"> {{ indexs.sms }} </span>
-                        </p>
-                    </div>
-                </div>
-                <!-- ======================Barishal Cadet ...End=========================== -->
-
-                <!-- ======================noapara-td.png=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.noaparaImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]"> {{ indexs.Noapara }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }}</span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }}</span> </p>
-                    </div>
-                </div>
-                <!-- ======================noapara-td.png End=========================== -->
-
-                <!-- ======================Hasan Traders=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.hasanImage" alt="">
-                    </div>
-                    <div class="mlg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]"> {{ indexs.Hasan }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }}</span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }}</span> </p>
-                    </div>
-                </div>
-                <!-- ======================Hasan Traders End=========================== -->
-
-                <!-- ======================Rupkatha=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.rupkathaImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]">{{ indexs.Rupkatha }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }} </span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }} </span>
-                            <i class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"> </i>
-                            <span class="hover:text-[#ae00b9]"> {{ indexs.sms }} </span>
-                        </p>
-                    </div>
-                </div>
-                <!-- ======================Rupkatha End=========================== -->
-
-                <!-- ======================CLG School=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.clgImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]">{{ indexs.clg }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }} </span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }} </span>
-                            <i class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"> </i>
-                            <span class="hover:text-[#ae00b9]"> {{ indexs.doma }} </span>
-                        </p>
-                    </div>
-                </div>
-                <!-- ======================CLG School End=========================== -->
-
-                <!-- ======================MAGEL=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.maglaImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]">{{ indexs.magel }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }} </span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }} </span>
-                            <i class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"> </i>
-                            <span class="hover:text-[#ae00b9]"> {{ indexs.doma }} </span>
-                        </p>
-                    </div>
-                </div>
-                <!-- ======================MAGEL End=========================== -->
-
-                <!-- ======================BAEZL=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.baezlImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]">{{ indexs.baezl }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }} </span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }} </span>
-                            <i class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"> </i>
-                            <span class="hover:text-[#ae00b9]"> {{ indexs.doma }} </span>
-                        </p>
-                    </div>
-                </div>
-                <!-- ======================BAEZL End=========================== -->
-
-                <!-- ======================Bahanno News=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.bahannoImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]">{{ indexs.Bahanno }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }} </span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }} </span>
-                            <i class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"> </i>
-                            <span class="hover:text-[#ae00b9]"> {{ indexs.sms }} </span>
-                        </p>
-                    </div>
-                </div>
-                <!-- ======================Bahanno News End=========================== -->
-
-                <!-- ======================CallingBell=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.callingImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]">{{ indexs.CallingBell }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]">{{ indexs.Hosting }}</span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.domain }}</span> </p>
-                    </div>
-                </div>
-                <!-- ======================CallingBell End=========================== -->
-
-                <!-- ======================Salt & Suger=========================== -->
-                <div class="border mt-5 rounded-[10px] lg:w-[280px] md:w-[290] w-full">
-                    <div class="image w-[55px] ml-4 pt-4 pb-2">
-                        <img :src="IMG +indexs.saltImage" alt="">
-                    </div>
-                    <div class="lg:ml-[80px] xl:ml-[80px] md:ml-[80px] ml-[100px] -mt-[60px]">
-                        <h2 class="text-[23px] font-semibold text-[#48a1da]">{{ indexs.Salt }}</h2>
-                        <p class="text-[#8987a0]"> <span class="hover:text-[#ae00b9]"> {{ indexs.Software }} </span> <i
-                                class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> <span
-                                class="hover:text-[#ae00b9]"> {{ indexs.Hosting }} </span>
-                            <i class="fa-solid fa-circle text-[5px] mb-2 text-[#ae00b9]"></i> 
-                            <span class="hover:text-[#ae00b9]"> {{ indexs.doma }} </span>
-                        </p>
-                    </div>
-                </div>
-                <!-- ======================Salt & Suger End=========================== -->
 
             </div>
         </div>
-        <img src="../assets/happy clients/feni-cadet.png" class="hidden" alt="">
-        <img src="../assets/happy clients/barishal-cadet.png" class="hidden" alt="">
-        <img src="../assets/happy clients/beacon.png" class="hidden" alt="">
-        <img src="../assets/happy clients/sylhet-cadet.png" class="hidden" alt="">
-        <img src="../assets/happy clients/janakantho.png" class="hidden" alt="">
-        <img src="../assets/happy clients/emc.png" class="hidden" alt="">
-        <img src="../assets/happy clients/noapara-td.png" class="hidden" alt="">
-        <img src="../assets/happy clients/demo-logo.png" class="hidden" alt="">
-        <img src="../assets/happy clients/rupkatha.png" class="hidden" alt="">
-        <img src="../assets/happy clients/clg-scl.png" class="hidden" alt="">
-        <img src="../assets/happy clients/magel.png" class="hidden" alt="">
-        <img src="../assets/happy clients/bazel.png" class="hidden" alt="">
-        <img src="../assets/happy clients/bahanno.png" class="hidden" alt="">
-        <img src="../assets/happy clients/calling-bell.png" class="hidden" alt="">
-        <img src="../assets/happy clients/salt-and-suger.png" class="hidden" alt="">
     </section>
 
 </template>

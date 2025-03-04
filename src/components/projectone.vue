@@ -9,7 +9,7 @@ const data = ref(null);
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`${BASE_URL}/api/projectPageInformation`);
+        const response = await axios.get(`${BASE_URL}ourProjectInfo`);
         data.value = response.data;
         console.log('Data fetched successfully:', data.value);
     } catch (error) {
@@ -17,64 +17,48 @@ onMounted(async () => {
     }
 });
 
-
-// const ProjectOne = [
-//     {
-//     Title:"Our Project"
-//     }
-// ]
-// const project = [
-//     {
-//         cashbookImage: "/assets/1677782775.1674061676.1673874025.logo-CuuJ35B2.png",
-//         cashbookText: "cashbook.com.bd",
-//         cashbookPragrap: "Cashbook.com.bd is an accounting and inventory software solution tailored to meet the needs of businesses, especially in Bangladesh.It offers tools for managing financial transactions, tracking expenses, generating invoices, and handling inventory management efficiently. The platform is designed to streamline accounting processes and provide businesses with insights into their financial health.With its user- friendly interface and customizable features, Cashbook.com.bd aims to help small to medium - sized enterprises(SMEs) in Bangladesh manage their finances effectively.",
-//         doofazimage: "/assets/index-nj_LffKU.jpg",
-//         doofazText: "Doofaz Training Institute",
-//         doofazPragrap: "Welcome to Doofaz Training, where we specialize in empowering individuals and organizations through high- quality professional development programs.As a division of Doofaz IT Limited, we offer a diverse range of training solutions tailored to meet the evolving needs of today's industries. Our experienced trainers and interactive sessions ensure that participants gain both the knowledge and practical skills needed to excel in their fields.Join us and unlock your potential for success with Doofaz Training.",
-//     }
-// ]
-
 </script>
 <template>
-    <section v-if="data && data" class="Background bg-[gray] pt-10">
+    <section class="Background bg-[gray] pt-10">
         <!-- ====================Headding-area==================== -->
-        <div v-for="(heading,index) in data" :key="index" class="container mx-auto">
+        <div class="container mx-auto">
             <div class="text-center">
-                <h2
-                    class="lg:text-5xl md:text-4xl text-5xl font-bold lg:mt-[200px] mt-[100px] lg:px-0 px-3 text-[#f47621] leading-tight">
-                    {{ heading.bannerTitle }}</h2>
+                <h2 class="lg:text-5xl md:text-4xl text-5xl font-bold lg:mt-[200px] mt-[100px] lg:px-0 px-3 text-[#f47621] leading-tight">
+                    Our Projects
+                </h2>
             </div>
         </div>
         <!-- ====================Headding-area End==================== -->
     </section>
 
 
-    <section class="px-10 pt-5 pb-5">
-        <div v-for="(projectarea,index) in data" :key="index"
-            class="grid gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 grid-cols-1">
-            <div class="border shadow lg:w-[400px] lg:ml-[200px]">
-                <div class="">
-                    <a href="https://cashbook.com.bd/" target="_blank">
-                        <img class="h-[100px] px-5 mt-[20px]" :src="IMG + projectarea.Logo" alt="">
+    <section v-if="data && data.data" class="px-10 pt-5 pb-5">
+        <div class="grid gap-6 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
+            <div v-for="(project, index) in data.data" :key="index" class="p-4">
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl border-2 border-[#aaa]">
+                    <a :href="project.link" target="_blank" class="block">
+                        <!-- Image Section -->
+                        <div class="relative py-4 border-b-4 border-[#48a1da] mx-auto">
+                            <img class="w-11/12 h-28 bg-cover rounded-t-lg transition-transform duration-300 hover:scale-105 mx-auto" 
+                                :src="IMG + project.image" alt="">
+                        </div>
+
+                        <!-- Content Section -->
+                        <div class="p-5">
+                            <h2 class="text-start font-bold text-2xl text-[#48a1da] hover:text-[#0056b3] transition-colors">
+                                {{ project.name }}
+                            </h2>
+                            <p class="text-gray-700 text-base pt-2 pb-4 font-semibold">
+                                {{ project.description }}
+                            </p>
+                            <div class="text-end">
+                                <span class="text-[#48a1da] font-semibold text-sm">Checkout The Project →</span>
+                            </div>
+                        </div>
                     </a>
                 </div>
-
-                <h2 class="text-center font-[600] text-[20px] text-[#48a1da] pt-10">{{ projectarea.Title }}</h2>
-                <p class="px-6 pt-5 pb-5">{{ projectarea.Description }}</p>
-            </div>
-            <div class="border shadow lg:w-[400px]">
-                <div class="">
-                    <a href="https://doofaztraining.com/" target="_blank">
-                        <img class="h-[140px] px-28 mt-[20px]" :src="IMG +projectarea.doofazimage" alt="">
-                    </a>
-                </div>
-
-                <h2 class="text-center font-[600] text-[20px] text-[#48a1da]">{{ projectarea.doofazText }}</h2>
-                <p class="px-6 pt-5 pb-5">{{ projectarea.doofazPragrap }}</p>
             </div>
         </div>
-        <img src="../assets/management/1677782775.1674061676.1673874025.logo.png" class="hidden" alt="">
-        <img src="../assets/management/index.jpg" class="hidden" alt="">
     </section>
 
 
@@ -84,6 +68,6 @@ onMounted(async () => {
     width: 100%;
     background: url(../assets/company/Top-10-Software-Company-in-Bangladesh.jpg) no-repeat;
     background-size: cover;
-    padding-bottom: 50px;
+    padding-bottom: 90px;
 }
 </style>

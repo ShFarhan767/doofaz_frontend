@@ -1,8 +1,13 @@
 <script setup>
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from "vue-router";
+import axios from 'axios';
+import { RouterLink } from 'vue-router';
+import { IMG } from '../assets/imageUrl';
+import { BASE_URL } from '../assets/apiConfig';
 import 'flowbite';
-import { ref } from 'vue';
-const isMobileMenuOpen = ref(false);
 
+const isMobileMenuOpen = ref(false);
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
 };
@@ -10,6 +15,74 @@ const toggleMobileMenu = () => {
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false;
 };
+
+const softwareMenu = ref(null);
+const softwareDetails = ref(null)
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}softwareMenuInfo`);
+    softwareMenu.value = response.data;
+
+    softwareDetails.value = softwareList.find(item => item.slug === route.params.slug);
+
+    console.log('Data fetched successfully:', softwareMenu.value);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+});
+
+const websiteMenu = ref(null);
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}websiteMenuItemInfo`);
+    websiteMenu.value = response.data;
+    console.log('Data fetched successfully:', websiteMenu.value);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+});
+
+const navbarContent = ref(null);
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}mobileNavbarContentInfo`);
+    navbarContent.value = response.data;
+    console.log('Navbar Content fetched successfully:', navbarContent.value);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+});
+
+const socialMedia = ref(null);
+
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}socialMediaInfo`);
+        socialMedia.value = response.data.data[0]; // Access the first object inside the data array
+        console.log('Footer Location Data fetched successfully:', socialMedia.value);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+});
+
+const router = useRouter();
+const activeDropdown = ref(null);
+
+const toggleDropdown = (dropdownId) => {
+  activeDropdown.value = activeDropdown.value === dropdownId ? null : dropdownId;
+};
+
+const closeDropdown = () => {
+  activeDropdown.value = null;
+};
+
+// Close dropdown when navigating to a new route
+router.afterEach(() => {
+  closeDropdown();
+});
 </script>
 
 <template>
@@ -30,20 +103,20 @@ const closeMobileMenu = () => {
         </button>
       </div>
       
-      <a href="http://localhost:5173/" class="logo-container animate-left-to-right md:ml-96 float-right">
+      <RouterLink to="/" class="logo-container animate-left-to-right md:ml-96 float-right">
         <img src="../assets/logo/logo.png" alt="Doofazit-Logo" />
-      </a>
-      <button class="float-right text-sm text-[#fff] font-medium py-1 px-2 bg-[#43aedf] rounded-lg">
-        Oder Now
-      </button>
+      </RouterLink>
+      <RouterLink to="/contact" class="float-right text-sm text-[#fff] font-medium py-1 px-2 bg-[#43aedf] rounded-lg">
+        Contact
+      </RouterLink>
 
         
       <!-- =================================modal========================== -->
       <div v-show="isMobileMenuOpen" tabindex="-1"
-        class="animate-left-to-right fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto max-h-full">
-        <div class="relative max-w-2xl sm:max-w-full max-h-full">
+        class="animate-left-to-right fixed top-0 left-0 right-0 z-50 w-[300px] overflow-x-hidden overflow-scroll max-h-full h-full">
+        <div class="relative max-w-2xl sm:max-w-[300px] max-h-full h-full">
           <!-- Modal content -->
-          <div class="content relative bg-white rounded-lg shadow">
+          <div class="content relative bg-white shadow h-full">
             <!-- Modal header -->
             <div class="bg-gray-50 flex items-center justify-between p-4 sm:p-0 md:p-5 border-b rounded-t">
               <a href="#" class="logo-container animate-right-to-left">
@@ -62,157 +135,99 @@ const closeMobileMenu = () => {
             </div>
 
             <!-- Modal footer -->
-            <ul
-              class="animate-left-to-right flex flex-col font-medium h-auto p-4 sm:p-0 md:p-0 mt-4 md:space-x-8 sm:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-gray-300">
+            <ul class="animate-left-to-right flex flex-col font-medium h-auto p-4 sm:p-0 md:p-0 mt-4 md:space-x-8 sm:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-gray-300">
               <!-- ===================================Company================================ -->
-              <button type="button"
-                class="flex items-center w-full sm:w-32 p-2  text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100"
-                aria-controls="dropdownNavbar" data-collapse-toggle="dropdownNavbar">
-                <span
-                  class="flex-1 ms-3 text-left hover:text-[#48a1da] rtl:text-right whitespace-nowrap text-lg sm:text-sm font-bold">Company</span>
-                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 10 6">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="m1 1 4 4 4-4" />
+              <button
+                class="flex items-center w-full sm:w-32 p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100"
+                @click="toggleDropdown('company')"
+              >
+                <span class="flex-1 ms-3 text-left hover:text-[#48a1da] rtl:text-right whitespace-nowrap text-lg sm:text-sm font-bold">
+                  Company
+                </span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
                 </svg>
               </button>
-              <ul @click.away="closeMobileMenu" id="dropdownNavbar" class="hidden py-2">
-                <li>
-                  <RouterLink to="/Message">
-                    <a href="#" class="block px-4 py-0 hover:bg-gray-100"><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> Message From Founder</a>
+
+              <ul v-if="activeDropdown === 'company'" @click.away ="closeMobileMenu" class="py-2">
+                <li @click="closeDropdown">
+                  <RouterLink to="/DoofazITLimited-founder-message" class="block px-4 py-2 hover:bg-gray-100">
+                    <i class="fa-solid fa-paper-plane text-red-500"></i> Message From Founder
                   </RouterLink>
                 </li>
-                <li>
-                  <RouterLink to="/Company">
-                    <a href="#" class="block px-4 py-0 hover:bg-gray-100"><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> Company Profile</a>
-                  </Routerlink>
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-0 hover:bg-gray-100"><i
-                      class="fa-solid fa-paper-plane text-red-500"></i> Technical Area </a>
-                </li>
-                <li>
-                  <RouterLink to="/Client">
-                    <a href="#" class="block px-4 py-0 hover:bg-gray-100"><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> Our Happy Client</a>
+                <li @click="closeDropdown">
+                  <RouterLink to="/DoofazITLimited-Profile" class="block px-4 py-2 hover:bg-gray-100">
+                    <i class="fa-solid fa-paper-plane text-red-500"></i> Company Profile
                   </RouterLink>
                 </li>
-                <li>
-                  <RouterLink to="/Management">
-                    <a href="#" class="block px-4 py-0 hover:bg-gray-100"><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> Management</a>
+                <li @click="closeDropdown">
+                  <RouterLink to="/Client" class="block px-4 py-2 hover:bg-gray-100">
+                    <i class="fa-solid fa-paper-plane text-red-500"></i> Our Happy Client
                   </RouterLink>
                 </li>
-                <!-- <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"><i
-                      class="fa-solid fa-paper-plane text-red-500"></i> Technical Team</a>
-                </li> -->
-                <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"><i
-                      class="fa-solid fa-paper-plane text-red-500"></i> Doofaz Training Institute (DTI)</a>
+                <li @click="closeDropdown">
+                  <RouterLink to="/Doofaz-Group" class="block px-4 py-2 hover:bg-gray-100">
+                    <i class="fa-solid fa-paper-plane text-red-500"></i> Project
+                  </RouterLink>
                 </li>
               </ul>
               <!-- ===================================Company End================================ -->
 
-              <!-- ===================================softower================================ -->
-              <button type="button"
+              <!-- Software Dropdown -->
+              <button @click="toggleDropdown('software')" class="flex items-center w-full sm:w-32 p-2 sm:p-0 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100">
+                <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap text-lg sm:text-sm font-bold">Software</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                </svg>
+              </button>
+
+              <ul v-if="activeDropdown === 'software'" @click.self="closeDropdown" @click.away ="closeMobileMenu" class="py-2 space-y-2">
+                <span v-if="softwareMenu && softwareMenu.data">
+                  <li v-for="menu in softwareMenu.data" :key="menu.id" class="w-full">
+
+
+                    
+                    <RouterLink :to="`/software-details/${menu.slug}`" class="w-full" @click="closeDropdown">
+                      <i class="fa-solid fa-paper-plane text-red-500"></i>
+                      {{ menu.name }}
+                    </RouterLink>
+                  </li>
+                </span>
+              </ul>
+
+        
+              <!-- Website Dropdown -->
+              <button 
+                type="button"
+                @click="toggleDropdown('website')" 
                 class="flex items-center w-full sm:w-32 p-2 sm:p-0 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100"
-                aria-controls="dropdownNavbar-sf" data-collapse-toggle="dropdownNavbar-sf">
-                <span
-                  class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap text-lg sm:text-sm font-bold">Software</span>
-                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 10 6">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="m1 1 4 4 4-4" />
+              >
+                <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap text-lg sm:text-sm font-bold">Website</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
                 </svg>
               </button>
-              <ul @click.away ="closeMobileMenu" id="dropdownNavbar-sf" class="hidden py-2 space-y-2">
-                <li>
-                  <RouterLink to="/POS">
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 "><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> Online POS (সব ধরনের ব্যাবসার জন্য) </a>
-                  </RouterLink>
-                </li>
-                <li>
-                  <RouterLink to="/ECommerceVue">
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 "><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> Business ERP(Completed Solutions) </a>
-                  </RouterLink>
-                </li>
-                <li>
-                  <RouterLink to="/ERPSolution"> <a href="#" class="block px-4 py-2 hover:bg-gray-100 "><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> Trasnport ERP </a>
-                  </RouterLink>
-                </li>
-                <li>
-                  <RouterLink to="/Accounting"> <a href="#" class="block px-4 py-2 hover:bg-gray-100 "><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> Accounting/Inventory </a>
-                  </RouterLink>
-                </li>
 
-                <li>
-                  <RouterLink to="/Education"> <a href="#" class="block px-4 py-2 hover:bg-gray-100 "><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> School Management</a>
-                  </RouterLink>
-                </li>
-                <li>
-                  <RouterLink to="/POS">
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100"><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> সকল দোকান দারদের জন্য(POS) </a>
-                  </RouterLink>
-                </li>
-
-                <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"><i
-                      class="fa-solid fa-paper-plane text-red-500"></i> MLM Software </a>
-                </li>
-                <li>
-                  <RouterLink to="/Tourism"> <a href="#" class="block px-4 py-2 hover:bg-gray-100"><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> Tours & Travels </a>
-                  </RouterLink>
-                </li>
-              </ul>
-              <!-- ===================================softower End================================ -->
-
-              <!-- ===================================Website End================================ -->
-
-              <button type="button"
-                class="flex items-center w-full sm:w-32 p-2 sm:p-0 text-base text-gray-900 transition duration-75 rounded-lg group  "
-                aria-controls="dropdownNavbarwe" data-collapse-toggle="dropdownNavbarwe">
-                <span
-                  class="flex-1 ms-3 text-left hover:text-[#48a1da] rtl:text-right whitespace-nowrap text-lg sm:text-sm font-bold">Website</span>
-                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 10 6">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="m1 1 4 4 4-4" />
-                </svg>
-              </button>
-              <ul @click.away="closeMobileMenu" id="dropdownNavbarwe" class="hidden py-2 space-y-2">
-                <li>
-                  <RouterLink to="/ECommerceVue">
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-100 "><i
-                        class="fa-solid fa-paper-plane text-red-500"></i> E-Commerce Service</a>
-                  </RouterLink>
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"><i
-                      class="fa-solid fa-paper-plane text-red-500"></i> Online News Portal</a>
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"><i
-                      class="fa-solid fa-paper-plane text-red-500"></i> Personal Branding Website</a>
-                </li>
-                <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100"><i
-                      class="fa-solid fa-paper-plane text-red-500"></i> Requirement Based Website </a>
-                </li>
+              <ul 
+                v-if="activeDropdown === 'website'" 
+                @click.self="closeDropdown" 
+                @click.away ="closeMobileMenu"
+                id="dropdownNavbarwe" 
+                class="py-2 space-y-2"
+              >
+                <span v-if="websiteMenu && websiteMenu.data">
+                  <li v-for="menu in websiteMenu.data" :key="menu.id" class="w-full py-1">
+                    <RouterLink :to="`/website-details/${menu.slug}`" class="w-full" @click="closeDropdown">
+                      <i class="fa-solid fa-paper-plane text-red-500"></i>
+                      {{ menu.name }}
+                    </RouterLink>
+                  </li>
+                </span>
               </ul>
 
               <!-- ===================================Website End================================ -->
 
-              <button type="button" @click.away="closeMobileMenu"
+              <!-- <button type="button" @click.away="closeMobileMenu"
                 class="flex items-center w-full sm:w-32 p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100">
                 <ul>
                   <li class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap text-lg sm:text-sm font-bold">
@@ -222,10 +237,23 @@ const closeMobileMenu = () => {
                     </RouterLink>
                   </li>
                 </ul>
-              </button>
+              </button> -->
 
               <button type="button" @click.away="closeMobileMenu"
-                class="flex items-center w-full sm:w-32 p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100">
+                class="flex items-center w-full sm:w-32 p-2 text-base text-gray-900 transition duration-75 group hover:bg-gray-100">
+                <ul>
+                  <li class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap text-lg sm:text-sm font-bold">
+                    <RouterLink to="/Info-Tech-Blog"
+                      class="block -mt-1 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 font-bold lg:text-lg">
+                      Blog
+                    </RouterLink>
+                  </li>
+                </ul>
+              </button>
+
+
+              <button type="button" @click.away="closeMobileMenu"
+                class="flex items-center w-full sm:w-32 p-2 text-base text-gray-900 transition duration-75 group hover:bg-gray-100 border-b-2 border-dotted border-black">
                 <ul>
                   <li class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap text-lg sm:text-sm font-bold">
                     <RouterLink to="/contact"
@@ -236,6 +264,57 @@ const closeMobileMenu = () => {
                 </ul>
               </button>
             </ul>
+
+            <div class="mx-3 pb-3">
+              <template v-if="navbarContent && navbarContent.data.length">
+                <template v-for="item in navbarContent.data" :key="item.id">
+                  <img
+                    v-if="item.type === 'image' && item.image"
+                    :src="IMG + item.image"
+                    class="rounded"
+                    alt="Navbar Content Image"
+                  />
+                  <iframe
+                    v-else-if="item.type === 'video' && item.videoLink"
+                    :src="item.videoLink"
+                    class="rounded"
+                    frameborder="0"
+                    width="270"
+                    allowfullscreen
+                  ></iframe>
+                </template>
+              </template>
+            </div>
+
+            <div class="mx-5 py-5">
+              <ul class="inline-flex gap-4">
+                  <li v-if="socialMedia && socialMedia.whatsappLink">
+                      <a :href="socialMedia.whatsappLink" target="_blank">
+                          <i class="fa-brands fa-whatsapp lg:text-[35px] text-[24px] text-black"></i>
+                      </a>
+                  </li>
+                  <li v-if="socialMedia && socialMedia.twitterLink">
+                      <a :href="socialMedia.twitterLink" target="_blank">
+                          <i class="fa-brands fa-twitter lg:text-[35px] text-[24px] text-black"></i>
+                      </a>
+                  </li>
+                  <li v-if="socialMedia && socialMedia.linkedinLink">
+                      <a :href="socialMedia.linkedinLink" target="_blank">
+                          <i class="fa-brands fa-linkedin-in lg:text-[35px] text-[24px] text-black"></i>
+                      </a>
+                  </li>
+                  <li v-if="socialMedia && socialMedia.facebookLink">
+                      <a :href="socialMedia.facebookLink" target="_blank">
+                          <i class="fa-brands fa-facebook lg:text-[35px] text-[24px] text-black"></i>
+                      </a>
+                  </li>
+                  <li v-if="socialMedia && socialMedia.youtubeLink">
+                      <a :href="socialMedia.youtubeLink" target="_blank">
+                          <i class="fa-brands fa-youtube lg:text-[30px] text-[24px] text-black"></i>
+                      </a>
+                  </li>
+              </ul>
+          </div>
           </div>
         </div>
       </div>

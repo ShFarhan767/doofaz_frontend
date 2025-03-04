@@ -1,42 +1,41 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';  // Import useRoute to access route parameters
+import { useRoute } from 'vue-router';
 import axios from 'axios';
-import { IMG } from '../assets/imageUrl';  // Assuming IMG holds the base URL for the images
-import { BASE_URL } from '../assets/apiConfig';  // Assuming BASE_URL is the base URL for your API
+import { IMG } from '../assets/imageUrl';
+import { BASE_URL } from '../assets/apiConfig';
 
 const softwarePostData = ref([]);
-const route = useRoute();  // Get the current route
+const route = useRoute();
 
 const softwarePostDetails = async () => {
-    const slug = route.params.slug;  // Get the slug from route parameters
+    const id = route.params.id;
+    if (!id) {
+        console.error("ID is missing in route parameters.");
+        return;
+    }
+    
     try {
-        const response = await axios.get(`${BASE_URL}softwarePostDetailsInfo/${slug}`);  // Use slug in API call
-        softwarePostData.value = response.data.data.sort((a, b) => a.dataPosition - b.dataPosition);  // Sort by dataPosition
-        console.log('Data fetched and sorted successfully:', softwarePostData.value);
+        const response = await axios.get(`${BASE_URL}softwareCategoryInfo/${id}`);
+        console.log("API Response:", response.data); // Log the full response
+
+        if (response.data && response.data.data && response.data.data.length) {
+            softwarePostData.value = response.data.data.sort((a, b) => a.dataPosition - b.dataPosition);
+        } else {
+            console.warn("API returned empty or invalid data.");
+            softwarePostData.value = [];
+        }
     } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error.response ? error.response.data : error.message);
+        softwarePostData.value = [];
     }
 };
-
-// const data = ref(null);
-
-// const softwareTypeBox = async () => {
-//     const slug = route.params.slug;  // Get the slug from route parameters
-//     try {
-//         const response = await axios.get(`${BASE_URL}softwareTypeInfo/${slug}`);
-//         data.value = response.data;
-//         console.log('Data fetched successfully:', data.value);
-//     } catch (error) {
-//         console.error('Error fetching data:', error);
-//     }
-// };
 
 const softwareType = ref(null);
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`${BASE_URL}softwareTypeInfo`);
+        const response = await axios.get(`${BASE_URL}softwareCategoryInfo`);
         softwareType.value = response.data;
         console.log('Data fetched successfully:', softwareType.value);
     } catch (error) {
@@ -44,20 +43,17 @@ onMounted(async () => {
     }
 });
 
-// Watch for changes in the route params (slug)
 watch(
-    () => route.params.slug,
-    (newSlug) => {
-        if (newSlug) {
-            softwarePostDetails(newSlug);
-            // softwareTypeBox(newSlug);
+    () => route.params.id,
+    (newId) => {
+        if (newId) {
+            softwarePostDetails();
         }
     }
 );
 
 onMounted(() => {
     softwarePostDetails();
-    // softwareTypeBox();
 });
 </script>
 
@@ -93,7 +89,7 @@ onMounted(() => {
                     <template v-if="item.withImage === 'yes' && item.videoLink">
                         <!-- Image Position Handling -->
                         <div :class="item.imagePosition === 'left' ? 'order-1' : 'order-2'">
-                            <h3 class="title text-3xl font-semibold tracking-wide py-5 mx-3">{{ item.title }}</h3>
+                            <h3 class="title text-3xl font-semibold tracking-wide py-5">{{ item.title }}</h3>
                             <img :src="IMG + item.image" alt="software image" class="lg:w-[95%] lg:h-[400px] rounded" />
                             
                             <div class="mt-5">
@@ -123,42 +119,12 @@ onMounted(() => {
 
                 <!-- Text content section -->
                 <div class="mt-5">
-                    <p class="text-lg text-[#333333] font-medium pb-10 mx-2" v-html="item.description"></p>
+                    <p class="text-lg text-[#333333] font-medium pb-10 lg:mx-0 mx-2" v-html="item.description"></p>
                 </div>
             </div>
         </section>
-
-        <section class="mt-5">
-            <div class="container mx-auto">
-                <div class="flex justify-center">
-                    <h2 class="py-2 text-white text-3xl font-medium text-center w-72 bg-[#48A1DA] rounded">Related Software</h2>
-                </div>
-                <div v-if="softwareType && softwareType.data"
-                    class="grid lg:gap-x-8 gap-4 lg:gap-y-7 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 lg:mt-[30px] py-5">
-                    <!-- Exclude item with the same id as in the route params -->
-                    <RouterLink :to="item.linkUrl"
-                        v-for="(item, index) in softwareType.data.filter(item => item.id !== parseInt(route.params.id) )"
-                        :key="index">
-                        <div
-                            class="border-[2px] h-auto rounded-[10px] cursor-pointer hover:bg-[#f1f1f1] shadow-lg text-center hover-card">
-                            <div class="flex justify-center">
-                                <img class="w-full lg:min-h-[200px] lg:max-h-[200px] rounded-t-[10px]"
-                                    :src="IMG + item.imageUrl" :title="item.imageAltTag" alt="">
-                            </div>
-                            <h2
-                                class="h-[100px] text-center font-[700] lg:text-lg text-sm py-5 mx-5 text-[#4f5b6d] hover-card-title">
-                                {{ item.title }}
-                            </h2>
-                            <div class="relative bottom-0 left-0 right-0 flex justify-end pb-5">
-                                <span class="lg:text-[16px] font-medium text-sm text-[#00ADE7] py-2 px-4 border border-[#00ADE7] border-r-0 rounded-l-full hover-btn">
-                                    Explore More
-                                    <span class="arrow">→</span>
-                                </span>
-                            </div>
-                        </div>
-                    </RouterLink>
-                </div>
-            </div>
-        </section>
+    </div>
+    <div v-else>
+        <p class="text-center text-lg font-medium text-gray-500 py-10">No data available.</p>
     </div>
 </template>

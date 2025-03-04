@@ -73,43 +73,46 @@ const handleTabChange = (tab) => {
             <!-- Display Software Items -->
             <div v-if="selectedTab === 'Software' && softwareType && softwareType.data"
                 class="grid lg:gap-x-8 gap-4 lg:gap-y-7 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 lg:mt-[30px] py-6">
-                <div v-for="(item, index) in softwareType.data.filter(item => item.frontendShowStatus === 'enable')"
-                    :key="index"
-                    class="border-[2px] rounded-[10px] cursor-pointer hover:bg-[#f1f1f1] shadow-lg text-center">
-                    <div class="flex justify-center">
-                        <img class="w-full lg:min-h-[200px] lg:max-h-[200px] rounded-t-[10px]" :src="IMG + item.imageUrl"
-                            :title="item.imageAltTag" alt="">
+                <RouterLink :to="item.linkUrl" v-for="(item, index) in softwareType.data"
+                        :key="index">
+                    <div class="border-[2px] rounded-[10px] cursor-pointer hover:bg-[#f1f1f1] shadow-lg text-center">
+                        <div class="flex justify-center">
+                            <img class="w-full lg:min-h-[200px] lg:max-h-[200px] rounded-t-[10px]" :src="IMG + item.imageUrl"
+                                :title="item.imageAltTag" alt="">
+                        </div>
+                        <h2 class="text-center h-[100px] font-bold lg:text-lg text-sm py-5 text-[#4f5b6d] mx-5">{{ item.title }}</h2>
+                        <div class="relative bottom-0 left-0 right-0 flex justify-end pb-5">
+                            <span
+                                class="lg:text-[16px] font-medium text-sm text-[#00ADE7] py-2 px-4 border border-[#00ADE7] border-r-0 rounded-l-full hover-btn">
+                                Explore More
+                                <span class="arrow">→</span>
+                            </span>
+                        </div>
                     </div>
-                    <h2 class="text-center h-[100px] font-bold lg:text-lg text-sm py-5 text-[#4f5b6d] mx-5">{{ item.title }}</h2>
-                    <div class="relative bottom-0 left-0 right-0 flex justify-end pb-5">
-                        <RouterLink :to="`/software-details/${item.id}`"
-                            class="lg:text-[16px] font-medium text-sm text-[#00ADE7] py-2 px-4 border border-[#00ADE7] border-r-0 rounded-l-full hover-btn">
-                            Explore More
-                            <span class="arrow">→</span>
-                        </RouterLink>
-                    </div>
-                </div>
+                </RouterLink>
             </div>
 
             <!-- Display Website Items -->
             <div v-if="selectedTab === 'Website' && websiteType && websiteType.data"
                 class="grid lg:gap-x-8 gap-4 lg:gap-y-7 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 lg:mt-[30px] py-6">
-                <div v-for="(item, index) in websiteType.data.filter(item => item.frontendShowStatus === 'enable')"
-                    :key="index"
-                    class="border-[2px] rounded-[10px] cursor-pointer hover:bg-[#f1f1f1] shadow-lg text-center">
-                    <div class="flex justify-center">
-                        <img class="w-full lg:min-h-[200px] lg:max-h-[200px] rounded-t-[10px]" :src="IMG + item.imageUrl"
-                            :title="item.imageAltTag" alt="">
+                <RouterLink :to="item.linkUrl"
+                    v-for="(item, index) in websiteType.data"
+                    :key="index">
+                    <div  class="border-[2px] rounded-[10px] cursor-pointer hover:bg-[#f1f1f1] shadow-lg text-center">
+                        <div class="flex justify-center">
+                            <img class="w-full lg:min-h-[200px] lg:max-h-[200px] rounded-t-[10px]" :src="IMG + item.imageUrl"
+                                :title="item.imageAltTag" alt="">
+                        </div>
+                        <h2 class="h-[100px] text-center font-bold lg:text-lg text-sm py-5 text-[#4f5b6d]">{{ item.title }}</h2>
+                        <div class="relative bottom-0 left-0 right-0 flex justify-end pb-5">
+                            <span
+                                class="lg:text-[16px] font-medium text-sm text-[#00ADE7] py-2 px-4 border border-[#00ADE7] border-r-0 rounded-l-full hover-btn">
+                                Explore More
+                                <span class="arrow">→</span>
+                            </span>
+                        </div>
                     </div>
-                    <h2 class="h-[100px] text-center font-bold lg:text-lg text-sm py-5 text-[#4f5b6d]">{{ item.title }}</h2>
-                    <div class="relative bottom-0 left-0 right-0 flex justify-end pb-5">
-                        <RouterLink :to="`/website-details/${item.id}`"
-                            class="lg:text-[16px] font-medium text-sm text-[#00ADE7] py-2 px-4 border border-[#00ADE7] border-r-0 rounded-l-full hover-btn">
-                            Explore More
-                            <span class="arrow">→</span>
-                        </RouterLink>
-                    </div>
-                </div>
+                </RouterLink>
             </div>
         </div>
     </div>

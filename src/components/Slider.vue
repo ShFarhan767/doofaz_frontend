@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { BASE_URL } from '../assets/apiConfig';
 import { IMG } from '../assets/imageUrl';
+import { RouterLink } from 'vue-router';
 
 const data = ref(null);
 const sliderContent = ref({
@@ -112,14 +113,14 @@ onMounted(() => {
                                 </p>
                                 <div class="lg:mt-10 mt-8 flex justify-start gap-5">
                                     <!-- Dynamic Buttons -->
-                                    <a :href="sliderContent.firstButtonLink"
+                                    <RouterLink to="/contact"
                                         class="lg:py-3 lg:px-6 px-2 py-2 rounded-3xl bg-[#1869b9] hover:bg-transparent hover:border hover:border-white">
                                         {{ sliderContent.firstButtonName }}
-                                    </a>
-                                    <a :href="sliderContent.secondButtonLink"
+                                    </RouterLink>
+                                    <!-- <a :href="sliderContent.secondButtonLink"
                                         class="lg:py-3 lg:px-6 px-2 py-2 rounded-3xl border border-white hover:border-none hover:bg-[#1869b9]">
                                         {{ sliderContent.secondButtonName }}
-                                    </a>
+                                    </a> -->
                                 </div>
                             </div>
                         </div>

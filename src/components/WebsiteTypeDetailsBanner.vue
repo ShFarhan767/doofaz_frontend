@@ -52,17 +52,21 @@ onMounted(async () => {
                                     :key="index" class="text-[#fff] lg:pb-2 pb-2 text-[17px]">
                                     <li class="2xl:text-[20px]">
                                         <i :class="type.iconClassName" class="text-[#48a1da]"></i>
-                                        {{ type.title }}
+                                        <RouterLink :to="type.linkUrl">
+                                            {{ type.title }}
+                                        </RouterLink>
                                     </li>
                                 </ul>
                             </div>
                             <!-- Second column: Showing next 10 items where frontendShowStatus is "enable" -->
                             <div class="text-[#fff]">
-                                <ul v-for="(type, index) in websiteType.data.filter(type => type.frontendShowStatus === 'enable').slice(10, 20)"
+                                <ul v-for="(type, index) in websiteType.data.slice(10, 20)"
                                     :key="index" class="text-[#fff] pb-2 text-[17px]">
                                     <li class="2xl:text-[20px]">
                                         <i :class="type.iconClassName" class="text-[#48a1da]"></i>
-                                        {{ type.title }}
+                                        <RouterLink :to="type.linkUrl">
+                                            {{ type.title }}
+                                        </RouterLink>
                                     </li>
                                 </ul>
                             </div>

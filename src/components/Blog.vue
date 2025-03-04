@@ -1,280 +1,110 @@
 <script setup>
+import { ref, onMounted, nextTick, watch } from 'vue';
+import axios from 'axios';
 import { IMG } from '../assets/imageUrl';
+import { BASE_URL } from '../assets/apiConfig';
 
-$(document).ready(function () {
-    $(".custom-carousel").owlCarousel({
-        loop: true,
-        margin: 10,
-        autoplay: true, // Uncomment this line to enable autoplay
-        autoplayTimeout: 3000,
-        autoplayHoverPause: true,
-        responsive: {
-            0: {
-                items: 1
-            },
-            600: {
-                items: 2
-            },
-            1000: {
-                items: 3
-            }
-        }
-    });
+const data = ref(null);
+
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}blogCardInfo`);
+        // Filter data based on homepageShowStatus
+        data.value = {
+            ...response.data,
+            data: response.data.data.filter(item => item.homepageShowStatus === 'enable')
+        };
+        console.log('Data fetched successfully:', data.value);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
 });
 
+// Watch the data and initialize Owl Carousel when it becomes available
+watch(data, (newValue) => {
+    if (newValue && newValue.data.length) {
+        nextTick(() => {
+            let $carousel = $(".custom-carousel");
 
-const blogarea = [
-    {
-        Title:"Read Our Latest Tips & Tricks",
-        title: "Read Our Latest Tips & Tricks",
-        image1: "/assets/1-BNUZCdHx.jpg",
-        image2: "/assets/2-MZsYq6qh.jpg",
-        image3: "/assets/3-Ck3SYr7l.jpg",
-        image4: "/assets/4-Bxy4bS7c.jpg",
-        image5:"/assets/5-DKrur6NH.jpg",
-        date: "20 December 2020",
-        button: "Learn More",
-        discription: " We denounce with righteous indige nation and dislike men who are so beguiled...",
-        Open: "Open Source Job Report Show More Openings Fewer",
-        Servo: "Servo Project Joins The Linux Foundation Fold Desco",
-        Necessity: "Necessity May Give Us Your Best Virtual Court System",
-        Tech: "Tech Products That Makes Its Easier to Stay at Home",
-        admin: "admin",
-        Digital: "Digital Technology",
-        Web: "Web Development",
-        It: "It Service",
-        Software: "Software Development",
-        Artifical:"Artifical Intelligence",
+            // Destroy previous instance
+            $carousel.trigger('destroy.owl.carousel');
+            $carousel.removeClass('owl-loaded owl-drag').find('.owl-stage-outer').children().unwrap();
+
+            // Reinitialize only if there is data
+            if (newValue.data.length > 0) {
+                $carousel.owlCarousel({
+                    loop: false, // No extra cloned items
+                    margin: 10,
+                    autoplay: true,
+                    autoplayTimeout: 3000,
+                    smartSpeed: 1000,
+                    autoplayHoverPause: true,
+                    responsive: {
+                        0: { items: 1 },
+                        600: { items: 2 },
+                        1000: { items: 3 }
+                    }
+                });
+            }
+        });
     }
-]
+});
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+    });
+}
 </script>
 
 <template>
-    <section class="blog-area lg:h-auto bg:hover:gray-500">
-
-        <div class="Title py-5 md:mt-20">
-
-            <h2 class="text-center font-bold md:text-4xl text-2xl text-[#48a1da] py-4">{{ blogarea.Title }}
+    <section class="blog-area lg:h-auto bg:hover:gray-500 pb-10">
+        <div class="Title py-5 md:mt-8">
+            <h2 class="text-center font-bold md:text-4xl text-2xl text-[#48a1da] py-4">
+                Read Our Latest Tips & Tricks
             </h2>
             <div class="w-full flex justify-center">
                 <span class="Heading_Line relative w-28 h-1 bg-[#48a1da]"></span>
             </div>
         </div>
 
-        <div v-for="(blog, index) in blogarea" :key="index" class="owl-carousel custom-carousel">
-
-            <div class="item">
-                <article class="swiper-slide swiper-slide-prev rounded-lg card" role="group" aria-label="3 / 4"
-                    data-swiper-slide-index="2">
-                    <article class="bg-white touch shadow-custom rounded-lg p-5 group" data-aos="fade-up"
+        <div v-if="data && data.data.length" class="owl-carousel custom-carousel">
+            <div v-for="(blog, index) in data.data" :key="index" class="item border rounded-lg min-h-[750px] max-h-[750px] mx-4">
+                <RouterLink :to="{ name: 'blog', params: { slug: blog.slug } }">
+                    <article class="bg-white shadow-custom rounded-lg p-2 group" data-aos="fade-up"
                         data-aos-duration="2000">
                         <a href="#!" class="mb-6 rounded overflow-hidden flex justify-center">
-                            <img :src="IMG +blog.image4"
-                                class="w-full lg:h-full md:h-full transform scale-1 group-hover:scale-105 duration-500"
+                            <img :src="IMG + blog.Image" :title="blog.imageAltTag"
+                                class="w-full lg:h-full lg:min-h-[300px] lg:max-h-[300px] md:h-full transform scale-1 group-hover:scale-105 duration-500"
                                 alt="Human">
-
-                            <a href="#"
-                                class="custom-font text-white text-lg px-5 py-1 rounded-full absolute right-9 lg:top-[340px] top-72 linear">
-                                {{ blog.Digital }}
-                            </a>
                         </a>
                         <div class="px-2 pb-10">
                             <div class="grid grid-cols-2 gap-5 pb-3">
                                 <p class="text-[#454545] custom-font">
                                     <i class="fa-regular fa-calendar-check text-[#48a1da]"></i>
-                                    <span class="ml-3 text-sm">{{ blog.date }}</span>
-                                </p>
-                                <p class="text-[#454545]">
-                                    <i class="fa-regular fa-user text-[#48a1da]"></i>
-                                    <span class="ml-2 text-[15px] font-medium">{{ blog.admin }}</span>
+                                    <span class="ml-3 text-sm">{{ formatDate(blog.created_at) }}</span>
                                 </p>
                             </div>
                             <h3
                                 class="text-start text-[#48a1da] leading-8 text-xl font-semibold custom-font hover:text-[#333]">
-                                {{ blog.Open }}
+                                {{ blog.title }}
                             </h3>
                             <p class="text-start text-[#333333] custom-font text-lg py-5">
-                                {{ blog.discription }}
+                                {{ blog.shortDescription }}
                             </p>
-                            <a href="#" class="text-start leading-8 text-lg font-semibold custom-font text-[#333]">
-                                {{blog.button}}
+                            <a :href="blog.buttonUrl"
+                                class="text-start leading-8 text-lg font-semibold custom-font text-[#333]">
+                                Read More
                                 <i class="fa-solid fa-chevron-right text-base text-[#48a1da]"></i>
                             </a>
                         </div>
                     </article>
-                </article>
-            </div>
-            <div class="item">
-                <article class="swiper-slide swiper-slide-prev rounded-lg card" role="group" aria-label="3 / 4"
-                    data-swiper-slide-index="2">
-                    <article class="bg-white touch shadow-custom rounded-lg p-5 group" data-aos="fade-up"
-                        data-aos-duration="2000">
-                        <a href="#!" class="mb-6 rounded overflow-hidden flex justify-center">
-                            <img :src="IMG +blog.image3"
-                                class="w-full lg:h-full md:h-full transform scale-1 group-hover:scale-105 duration-500"
-                                alt="Human">
-
-                            <a href="#"
-                                class="custom-font text-white text-lg px-5 py-1 rounded-full absolute right-9 lg:top-[340px] top-72 linear">
-                                {{ blog.Web }}
-                            </a>
-                        </a>
-                        <div class="px-2 pb-10">
-                            <div class="grid grid-cols-2 gap-5 pb-3">
-                                <p class="text-[#454545] custom-font">
-                                    <i class="fa-regular fa-calendar-check text-[#48a1da]"></i>
-                                    <span class="ml-3 text-sm">{{ blog.date }}</span>
-                                </p>
-                                <p class="text-[#454545]">
-                                    <i class="fa-regular fa-user text-[#48a1da]"></i>
-                                    <span class="ml-2 text-[15px] font-medium">{{ blog.admin }}</span>
-                                </p>
-                            </div>
-                            <h3
-                                class="text-start text-[#48a1da] leading-8 text-xl font-semibold custom-font hover:text-[#333]">
-                                {{ blog.Tech }}
-                            </h3>
-                            <p class="text-start text-[#333333] custom-font text-lg py-5">
-                                {{ blog.discription }}
-                            </p>
-                            <a href="#" class="text-start leading-8 text-lg font-semibold custom-font text-[#333]">
-                                {{ blog.button}}
-                                <i class="fa-solid fa-chevron-right text-base text-[#48a1da]"></i>
-                            </a>
-                        </div>
-                    </article>
-                </article>
-            </div>
-            <div class="item">
-                <article class="swiper-slide swiper-slide-prev rounded-lg card" role="group" aria-label="3 / 4"
-                    data-swiper-slide-index="2">
-                    <article class="bg-white touch shadow-custom rounded-lg p-5 group" data-aos="fade-up"
-                        data-aos-duration="2000">
-                        <a href="#!" class="mb-6 rounded overflow-hidden flex justify-center">
-                            <img :src="IMG +blog.image1"
-                                class="w-full lg:h-full md:h-full transform scale-1 group-hover:scale-105 duration-500"
-                                alt="Human">
-
-                            <a href="#" class="custom-font text-white text-lg px-5 py-1 rounded-full absolute right-9 lg:top-[340px] top-72 linear">
-                                {{ blog.It }}
-                            </a>
-                        </a>
-                        <div class="px-2 pb-10">
-                            <div class="grid grid-cols-2 gap-5 pb-3">
-                                <p class="text-[#454545] custom-font">
-                                    <i class="fa-regular fa-calendar-check text-[#48a1da]"></i>
-                                    <span class="ml-3 text-sm">{{ blog.date }}</span>
-                                </p>
-                                <p class="text-[#454545]">
-                                    <i class="fa-regular fa-user text-[#48a1da]"></i>
-                                    <span class="ml-2 text-[15px] font-medium">{{ blog.admin }}</span>
-                                </p>
-                            </div>
-                            <h3
-                                class="text-start text-[#48a1da] leading-8 text-xl font-semibold custom-font hover:text-[#333]">
-                                {{ blog.Servo }}
-                            </h3>
-                            <p class="text-start text-[#333333] custom-font text-lg py-5">
-                                {{ blog.discription }}
-                            </p>
-                            <a href="#" class="text-start leading-8 text-lg font-semibold custom-font text-[#333]">
-                                {{ blog.button}}
-                                <i class="fa-solid fa-chevron-right text-base text-[#48a1da]"></i>
-                            </a>
-                        </div>
-                    </article>
-                </article>
-            </div>
-            <div class="item">
-                <article class="swiper-slide swiper-slide-prev rounded-lg card" role="group" aria-label="3 / 4"
-                    data-swiper-slide-index="2">
-                    <article class="bg-white touch shadow-custom rounded-lg p-5 group" data-aos="fade-up"
-                        data-aos-duration="2000">
-                        <a href="#!" class="mb-6 rounded overflow-hidden flex justify-center">
-                            <img :src="IMG +blog.image2"
-                                class="w-full lg:h-full md:h-full transform scale-1 group-hover:scale-105 duration-500"
-                                alt="Human">
-
-                            <a href="#"
-                                class="custom-font text-white text-lg px-5 py-1 rounded-full absolute right-9 lg:top-[340px] top-72 linear">
-                                {{ blog.Software }}
-                            </a>
-                        </a>
-                        <div class="px-2 pb-10">
-                            <div class="grid grid-cols-2 gap-5 pb-3">
-                                <p class="text-[#454545] custom-font">
-                                    <i class="fa-regular fa-calendar-check text-[#48a1da]"></i>
-                                    <span class="ml-3 text-sm">{{ blog.date }}</span>
-                                </p>
-                                <p class="text-[#454545]">
-                                    <i class="fa-regular fa-user text-[#48a1da]"></i>
-                                    <span class="ml-2 text-[15px] font-medium">{{ blog.admin }}</span>
-                                </p>
-                            </div>
-                            <h3
-                                class="text-start text-[#48a1da] leading-8 text-xl font-semibold custom-font hover:text-[#333]">
-                                {{ blog.Necessity }}
-                            </h3>
-                            <p class="text-start text-[#333333] custom-font text-lg py-5">
-                                {{ blog.discription }}
-                            </p>
-                            <a href="#" class="text-start leading-8 text-lg font-semibold custom-font text-[#333]">
-                                {{ blog.button}}
-                                <i class="fa-solid fa-chevron-right text-base text-[#48a1da]"></i>
-                            </a>
-                        </div>
-                    </article>
-                </article>
-            </div>
-            <div class="item">
-                <article class="swiper-slide swiper-slide-prev rounded-lg card" role="group" aria-label="3 / 4"
-                    data-swiper-slide-index="2">
-                    <article class="bg-white touch shadow-custom rounded-lg p-5 group" data-aos="fade-up"
-                        data-aos-duration="2000">
-                        <a href="#!" class="mb-6 rounded overflow-hidden flex justify-center">
-                            <img :src="IMG +blog.image5"
-                                class="w-full lg:h-full md:h-full transform scale-1 group-hover:scale-105 duration-500"
-                                alt="Human">
-
-                            <a href="#"
-                                class="custom-font text-white text-lg px-5 py-1 rounded-full absolute right-9 lg:top-[340px] top-72 linear">
-                                {{ blog.Artifical }}
-                            </a>
-                        </a>
-                        <div class="px-2 pb-10">
-                            <div class="grid grid-cols-2 gap-5 pb-3">
-                                <p class="text-[#454545] custom-font">
-                                    <i class="fa-regular fa-calendar-check text-[#48a1da]"></i>
-                                    <span class="ml-3 text-sm">{{ blog.date }}</span>
-                                </p>
-                                <p class="text-[#454545]">
-                                    <i class="fa-regular fa-user text-[#48a1da]"></i>
-                                    <span class="ml-2 text-[15px] font-medium">{{ blog.admin }}</span>
-                                </p>
-                            </div>
-                            <h3
-                                class="text-start text-[#48a1da] leading-8 text-xl font-semibold custom-font hover:text-[#333]">
-                                {{ blog.Servo }}
-                            </h3>
-                            <p class="text-start text-[#333333] custom-font text-lg py-5">
-                                {{ blog.discription }}
-                            </p>
-                            <a href="#" class="text-start  leading-8 text-lg font-semibold custom-font text-[#333]">
-                                {{ blog.button }}
-                                <i class="fa-solid fa-chevron-right text-base text-[#48a1da]"></i>
-                            </a>
-                        </div>
-                    </article>
-                </article>
+                </RouterLink>
             </div>
         </div>
-        <img src="../assets/blog/1.jpg" class="hidden" alt="">
-        <img src="../assets/blog/2.jpg" class="hidden" alt="">
-        <img src="../assets/blog/3.jpg" class="hidden" alt="">
-        <img src="../assets/blog/4.jpg" class="hidden" alt="">
-        <img src="../assets/blog/5.jpg" class="hidden" alt="">
     </section>
-
 </template>
 
 <style scoped>
@@ -292,6 +122,7 @@ const blogarea = [
     height: auto;
     padding-bottom: 80px;
 }
+
 @media all and (min-width:320px) and (max-width:780px) {
     .item {
         width: 355px !important;
@@ -316,18 +147,22 @@ const blogarea = [
     animation-direction: alternate-reverse;
     animation-name: watermark-animate;
 }
-.touch{
+
+.touch {
     transition: all 500ms ease;
     box-shadow: 0 6px 25px rgba(12, 89, 219, 0.09);
     cursor: pointer;
     transition: all 500ms ease;
 }
-.linear{
+
+.linear {
     background: -webkit-linear-gradient(left, #03228f 0%, #03228f 0%, #03228f 26%, #4e95ed 100%, #2989d8 100%, #207cca 100%, #0b70e1 100%);
 }
-.touch:hover .linear{
+
+.touch:hover .linear {
     background: linear-gradient(to left, #03228f 0%, #03228f 0%, #03228f 26%, #4e95ed 100%, #2989d8 100%, #207cca 100%, #0b70e1 100%);
 }
+
 @keyframes watermark-animate {
     0% {
         left: 0;

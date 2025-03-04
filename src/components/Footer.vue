@@ -16,30 +16,49 @@ onMounted(async () => {
     }
 });
 
+const menu = ref(null);
+
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}footerMenuInfo`);
+        menu.value = response.data;
+        console.log('Footer Menu Data fetched successfully:', menu.value);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+});
+
+const bottomMenu = ref([]);
+
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}footerBottomMenuInfo`);
+        bottomMenu.value = response.data;
+        console.log('Footer Bottom Menu Data fetched successfully:', bottomMenu.value);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+});
+
+const location = ref(null);
+
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}officeDetailsInfo`);
+        location.value = {
+            ...response.data,
+            data: response.data.data.filter(item => item.homepageShowStatus === 'enable')
+        };
+        console.log('Footer Location Data fetched successfully:', location.value);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+});
+
 const mapLink = ref({
     pageUrl: '/googleMap-visual',
     iframeUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.615522670994!2d90.36256027484606!3d23.761086188366942!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755bf582f84cc11%3A0x2d79e31cd70a190a!2sDoofaz%20ITLimited!5e0!3m2!1sen!2sbd!4v1728388071513!5m2!1sen!2sbd'
 })
-
-const footerarea = [
-    {
-        logoimage: "/assets/logo-DeIE9hVQ.png",
-        pragrap: "Doofaz IT Limited is a prominent software company known for its innovative solutions and reliable services.With a focus on cutting- edge technology and customer satisfaction, Doofaz IT Limited offers a wide range of software products tailored to meet the needs of businesses across various industries.Their commitment to excellence and dedication to staying ahead of industry trends make them a trusted partner.",
-        IT: "IT Services",
-        Software: "Software Development",
-        web: "Web Development",
-        solution: "Analytic Solutions",
-        Cloud: "Cloud and DevOps",
-        design: "Product Design",
-        contact: "Contact Info",
-        location: "House#20(Floor-4,D1),Main Road, Rampura Bansree Dhaka-1219",
-        number: "01969912221",
-        hotline: "( HOT LINE )",
-        doofazmail: "doofazinfo@gmail.com",
-        infomail: "info@doofazit.com",
-        map: "Location Map",
-    }
-]
 
 const copyright = [
     {
@@ -71,37 +90,35 @@ const copyright = [
                     <h5 class="lg:px-10 text-3xl 2xl:text-xl font-bold sm:text-2xl sm:font-bold text-[#48a1da]">
                         {{ details.titleOne }}
                     </h5>
-                    <ul class="lg:px-10 lg:mt-10 sm:leading-8 leading-10 lg:text-lg text-gray-600">
-                        <li class="hover:text-blue-600"><a href="#">Software Development</a></li>
-                        <li class="lg:mt-2 hover:text-blue-600"><a href="#">Web Development</a></li>
+                    <ul v-if="menu && menu.data" class="lg:px-10 lg:mt-10 sm:leading-8 leading-10 lg:text-lg text-gray-600">
+                        <li v-for="(menus , index) in menu.data" :key="index" class="hover:text-blue-600 lg:mt-2">
+                            <a :href="menus.menuLink">{{ menus.menuName }}</a>
+                        </li>
+                        <!-- <li class="lg:mt-2 hover:text-blue-600"><a href="#">Web Development</a></li>
                         <li class="lg:mt-2 hover:text-blue-600"><a href="#">Analytic Solutions</a></li>
                         <li class="lg:mt-2 hover:text-blue-600"><a href="#">Cloud and DevOps</a></li>
-                        <li class="lg:mt-2 hover:text-blue-600"><a href="#">Product Design</a></li>
+                        <li class="lg:mt-2 hover:text-blue-600"><a href="#">Product Design</a></li> -->
                     </ul>
                 </div>
                 <!-- ====================== Services End ==============================  -->
 
                 <!-- ====================== Contact Info ==============================  -->
-                <div class="service lg:mt-14 sm:mt-8">
+                <div v-if="location && location.data" class="service lg:mt-14 sm:mt-8">
                     <h5 class="lg:px-2 text-3xl font-bold sm:text-2xl sm:font-bold text-[#48a1da]">
                         {{ details.titleTwo }}
                     </h5>
-                    <ul class="lg:mt-10 leading-10 sm:leading-4 lg:text-lg text-gray-600">
-                        <div class="location mt-2 sm:mt-1 sm:text-sm">
+                    <ul v-for="(locations , index) in location.data" :key="index" class="lg:mt-10 leading-10 sm:leading-4 lg:text-lg text-gray-600">
+                        <div class="location mt-2 sm:mt-1 sm:text-sm flex justify-start">
                             <i class="fa-solid fa-mountain-city text-red-500 float-left p-2 -ml-2 lg:ml-1"></i>
-                            <h5 class="lg:text-start sm:text-base sm:text-justify text-base lg:ml-6 sm:ml-4">
-                                House#20(Floor-4,D1), Main Road, Rampura Bansree Dhaka-1219
+                            <h5 class="lg:text-start sm:text-base sm:text-justify text-base">
+                                {{ locations.address }}
                             </h5>
                         </div>
                         <li class="lg:mt-2 lg:px-3 sm:mt-2 sm:text-base">
-                            <a href="#"><i class="fa-solid fa-phone-volume text-red-500"></i> 01969912221 <span
-                                    class="font-[600] text-[#48a1da]">(HOT LINE)</span></a>
-                        </li>
-                        <li class="lg:mt-2 lg:px-3 sm:mt-2 sm:text-base">
-                            <a href="#"><i class="fa-solid fa-envelope text-red-500"></i> doofazinfo@gmail.com</a>
-                        </li>
-                        <li class="lg:mt-2 lg:px-3 sm:mt-2 sm:text-base">
-                            <a href="#"><i class="fa-solid fa-envelope text-red-500"></i> info@doofazit.com</a>
+                            <a href="#" class="flex justify-start gap-2 leading-8">
+                                <i class="fa-solid fa-phone-volume text-red-500 mt-2"></i> 
+                                <p v-html="locations.details"></p>
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -109,11 +126,12 @@ const copyright = [
 
                 <!-- ====================== Map Area ==============================  -->
                 <div class="news-letter lg:mt-14 sm:mt-8 lg:pb-0 md:pb-4 pb-5">
-                    <h5 class="lg:px-2 text-3xl font-bold sm:text-2xl sm:font-bold text-[#48a1da]">{{ details.titleThree
-                        }}</h5>
+                    <h5 class="lg:px-2 text-3xl font-bold sm:text-2xl sm:font-bold text-[#48a1da]">
+                        {{ details.titleThree }}
+                    </h5>
                     <div class="map mt-5 w-[310px]">
-                        <RouterLink :to="{ path: mapLink.pageUrl, query: { iframe: mapLink.iframeUrl } }">
-                            <img src="../assets/Logo/map.png" class="w-full h-full pr-5" alt="Google Map">
+                        <RouterLink :to="{ path: mapLink.pageUrl, query: { iframe: details.mapURL } }">
+                            <img :src="IMG + details.locationImg" class="w-full h-full pr-5" alt="Google Map">
                         </RouterLink>
                     </div>
                 </div>
@@ -132,14 +150,14 @@ const copyright = [
                     </h4>
                 </div>
                 <div class="md:hidden lg:block"></div>
-                <div>
-                    <ul class="-py-2 lg:py-3 md:mt-3 md:ml-16 lg:ml-28 px-5 lg:px-1 ml-10 -mt-3">
-                        <li class="float-left px-1"><a href="#"><i class="fa-regular fa-circle-dot text-red-500"></i> {{
-                                copyrightarea.home }}</a></li>
-                        <li class="float-left px-1"><a href="#"><i class="fa-regular fa-circle-dot text-red-500"></i> {{
-                                copyrightarea.about }}</a></li>
-                        <li class="float-left px-1"><a href="#"><i class="fa-regular fa-circle-dot text-red-500"></i> {{
-                                copyrightarea.blog }}</a></li>
+                <div class="pb-4">
+                    <ul v-if="bottomMenu && bottomMenu.data" class="-py-2 lg:py-3 md:mt-3 md:ml-16 lg:ml-28 px-5 lg:px-1 ml-10 -mt-3">
+                        <li v-for="menu in bottomMenu.data" :key="menu.id" class="float-left px-1">
+                            <RouterLink :to="menu.menuLink">
+                                <span v-html="menu.icon" class="text-red-500"></span>
+                                {{ menu.menuName }}
+                            </RouterLink>
+                        </li>
                     </ul>
                 </div>
             </div>

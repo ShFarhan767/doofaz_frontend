@@ -3,6 +3,7 @@ import Slider from '@/components/Slider.vue';
 import GlanceCount from '@/components/GlanceCount.vue';
 import Accessories from '@/components/Accessories.vue';
 import HomeAbout from '@/components/HomeAbout.vue';
+import SoftawareCategory from '@/components/SoftawareCategory.vue';
 import WorkCategoryCard from '@/components/WorkCategoryCard.vue';
 import OurProject from '@/components/OurProject.vue';
 import industry from '@/components/industry.vue';
@@ -16,6 +17,7 @@ import Blog from '@/components/Blog.vue'
 <template>
     <Slider />
     <Accessories />
+    <SoftawareCategory />
     <!-- <HomeAbout /> -->
     <WorkCategoryCard />
     <OurProject />

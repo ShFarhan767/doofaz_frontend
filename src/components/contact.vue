@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { IMG } from '../assets/imageUrl';
 import { BASE_URL } from '../assets/apiConfig';
@@ -27,6 +27,163 @@ onMounted(async () => {
         console.error('Error fetching data:', error);
     }
 });
+
+const selectedCategory = ref('');
+const selectedCategoryFromDropdown = ref(null);
+const categoryOptions = ref([]);
+const softwareMenu = ref([]);
+const softwareCategory = ref([]);
+const websiteMenu = ref([]);
+const othersMenu = ref([]);
+const selectedSoftwareCategory = ref(null);  // Add a reactive reference for the software category
+
+// Fetch Software Menu
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}softwareMenuInfo`);
+        softwareMenu.value = response.data.data;
+        console.log('Software Menu Data:', softwareMenu.value);
+    } catch (error) {
+        console.error('Error fetching software menu:', error);
+    }
+});
+
+// Fetch Software Category
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}softwareCategoryName`);
+        softwareCategory.value = response.data.data;
+        console.log('Software Category Data:', softwareCategory.value);
+    } catch (error) {
+        console.error('Error fetching software categories:', error);
+    }
+});
+
+// Fetch Website Menu
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}websiteMenuItemInfo`);
+        websiteMenu.value = response.data.data;
+        console.log('Website Menu Data:', websiteMenu.value);
+    } catch (error) {
+        console.error('Error fetching website menu:', error);
+    }
+});
+
+const updateCategoryOptionsFromRadio = () => {
+    if (selectedCategory.value === 'software') {
+        categoryOptions.value = softwareMenu.value;
+    } else if (selectedCategory.value === 'website') {
+        categoryOptions.value = websiteMenu.value;
+    } else if (selectedCategory.value === 'others') {
+        categoryOptions.value = othersMenu.value;
+    } else {
+        categoryOptions.value = [];
+    }
+};
+
+// const updateCategoryOptionsFromDropdown = () => {
+//     if (selectedCategoryFromDropdown.value) {
+//         selectedCategory.value = null; // Reset radio buttons when dropdown is selected
+//     }
+// };
+
+// Computed property to filter items with position "1"
+const filteredLocationDetails = computed(() => {
+    return locationDetails.value?.data?.filter(item => item.position === "1") || [];
+});
+
+// Computed property to filter items with position "2"
+const filteredLocationDetailsPosition2 = computed(() => {
+    return locationDetails.value?.data?.filter(item => item.position === "2") || [];
+});
+
+// Computed property to filter items with position "3"
+const filteredLocationDetailsPosition3 = computed(() => {
+    return locationDetails.value?.data?.filter(item => item.position === "3") || [];
+});
+
+const numbers = ref(null);
+
+onMounted(async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}officeHelplineNumbersInfo`);
+        // Filter data based on homepageShowStatus
+        numbers.value = {
+            ...response.data,
+            data: response.data.data.filter(item => item.numberShowStatus === 'enable')
+        };
+        console.log('Data fetched successfully:', data.value);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+});
+
+const formData = ref({
+    name: '',
+    email: '',
+    number: '',
+    location: '',
+    message: '',
+    otherCategory: ''
+});
+
+const submitForm = async () => {
+    try {
+        const response = await axios.post(`${BASE_URL}formData`, {
+            ...formData.value,
+            selectedCategory: selectedCategory.value,
+            selectedCategoryFromDropdown: String(selectedCategoryFromDropdown.value),  // Convert to string
+            selectedSoftwareCategory: String(selectedSoftwareCategory.value),  // Convert to string
+            otherCategory: formData.value.otherCategory,
+            number: String(formData.value.number)  // Convert to string
+        });
+
+        // Handle success response (e.g., show a message to the user)
+        console.log(response);
+
+        
+        // Reset all form fields after successful submission
+        formData.value = {
+            name: '',
+            email: '',
+            number: '',
+            location: '',
+            message: '',
+            otherCategory: ''
+        };
+        
+        // Reset the other selected fields
+        selectedCategory.value = ''; // Reset selectedCategory
+        selectedCategoryFromDropdown.value = ''; // Reset selectedCategoryFromDropdown
+        selectedSoftwareCategory.value = ''; // Reset selectedSoftwareCategory
+        
+        showToast();
+    } catch (error) {
+        // Handle error response (e.g., show an error message)
+        alert('An error occurred while submitting the form');
+        console.error(error);
+    }
+};
+
+function showToast() {
+    const toastHTML = `
+        <div class="flex items-center w-full max-w-[500px] h-20 p-4 space-x-4 rtl:space-x-reverse text-black bg-white font-semibold text-xl divide-x rtl:divide-x-reverse divide-gray-200 rounded-lg shadow-lg dark:text-gray-400 dark:divide-gray-700 dark:bg-gray-800" role="alert">
+            <i class="fa-regular fa-circle-check text-[#38c976] text-5xl w-20 h-20 flex items-center justify-center"></i>
+            <div class="ps-4 text-3xl font-semibold text-green-800">Thank you for your order</div>
+        </div>
+    `;
+
+    const toastContainer = document.getElementById('toast-container');
+    const toastElement = document.createElement('div');
+    toastElement.innerHTML = toastHTML;
+    toastContainer.appendChild(toastElement);
+
+    // Remove the toast after 3 seconds
+    setTimeout(() => {
+        toastElement.remove();
+    }, 10000);
+}
 </script>
 
 <template>
@@ -44,51 +201,36 @@ onMounted(async () => {
 
     <section v-if="data && data.data" class="bg-[#d8dfe0]">
         <!-- ====================informetion-area==================== -->
-        <div  class="lg:px-20 grid gap-x-8 gap-y-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:pb-12">
+        <div class="lg:px-20 grid gap-x-8 gap-y-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:pb-12">
 
             <!-- =================company-info============= -->
             <div class="cumpany-info lg:w-[80%] lg:h-auto lg:mt-10 lg:pb-5 lg:pt-5 pb-5 px-5 pt-5">
-                <div class="pt-4">
-                    <h2 class="text-center text-2xl font-semibold"><span class="text-[#48a1da]">{{ data.data[0].location
-                            }}</span></h2>
 
-                    <span v-if="locationDetails && locationDetails.data">
-                        <span v-for="(details , index) in locationDetails.data" :key="index">
-                            <p class="text-sm mt-4 font-medium"><i class="fa-solid fa-location-pin text-[#ef4444]"></i>
-                                <span class="text-lg"> House#20 (Floor-4,D1),Main Road, Rampura Bansree Dhaka-1219</span>
-                            </p>
-                            <p class="text-md mt-3 font-medium" v-html="details.details"></p>
+                <!-- Position 1 -->
+                <div v-if="locationDetails && locationDetails.data">
+                    <div v-for="(details, index) in filteredLocationDetails" :key="index" class="pt-4">
+                        <h2 class="text-center text-2xl font-semibold">
+                            <span class="text-[#48a1da]">{{ details.locationId }}</span>
+                        </h2>
+
+                        <span>
+                            <span>
+                                <p class="text-sm mt-4 font-medium flex justify-start items-baseline gap-2">
+                                    <i class="fa-solid fa-location-pin text-[#ef4444]"></i>
+                                    <span class="text-lg">{{ details.address }}</span>
+                                </p>
+                                <p class="text-md mt-3 font-medium" v-html="details.details"></p>
+                            </span>
                         </span>
-                    </span>
-                    <!-- <p class="text-md mt-3 font-medium"><i class="fa-solid fa-phone text-[#ef4444]"></i>
-                        01969912221 <span class="font-[600] text-[#48a1da]">( What'sapp )</span>
-                    </p>
-                    <p class="text-md mt-3 font-medium"><i class="fa-solid fa-phone text-[#ef4444]"></i>
-                        01969912221 <span class="font-[600] text-[#48a1da]">( Telegram )</span>
-                    </p>
-                    <a href="#" target="_blank" class="top-2 text-lg relative font-medium ">
-                        <i class="fa-brands fa-facebook-f text-[#ef4444]"></i>
-                        <span class="font-[500] text-[#000] ml-2">facebook Group</span>
-                    </a>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-envelope text-[#ef4444]"></i>
-                        <span>doofazinfo@gmail.com</span></p>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-envelope text-[#ef4444]"></i>
-                        <span>info@doofazit.com</span></p> -->
-
+                    </div>
                 </div>
-                <div class="pt-4">
+                <!-- Position 1 -->
+
+                <div v-if="numbers && numbers.data" class="pt-4">
                     <h2 class="text-center text-2xl font-semibold text-[#48a1da] mt-5">Doofaz IT Helpline</h2>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-phone text-[#ef4444]"></i> 01969912221
-                        <span class="font-[500] text-[#48a1da]">( HOT LINE )</span>
-                    </p>
-                    <p class="text-md mt-3 font-medium"><i class="fa-solid fa-phone text-[#ef4444]"></i> 01812454358
-                        <span class="font-[600] text-[20px] text-[#48a1da]">(Sales)</span>
-                    </p>
-                    <p class="text-md mt-3 font-medium"><i class="fa-solid fa-phone text-[#ef4444]"></i> 01894958731
-                        <span class="font-[500] text-[20px] text-[#48a1da]">(Sales)</span>
-                    </p>
-                    <p class="text-md mt-3 font-medium"><i class="fa-solid fa-phone text-[#ef4444]"></i> 01894958735
-                        <span class="font-[500] text-[20px] text-[#48a1da]">(Sales)</span>
+                    <p v-for="(number, index) in numbers.data" :key="index" class="text-md mt-4 font-medium">
+                        <span v-html="number.icon" class="text-red-500"></span> {{ number.number }}
+                        <span class="font-[500] text-[#48a1da]">{{ number.numberTitle }}</span>
                     </p>
                 </div>
             </div>
@@ -96,46 +238,99 @@ onMounted(async () => {
 
             <!-- =================form-info============= -->
             <div class="form-area lg:w-[150%] lg:h-auto lg:mt-10 lg:pb-5 lg:pt-5 pb-5 px-5 pt-5 lg:-ml-20">
-                <form class="max-w-md mx-auto">
-                    <div class="mb-5">
-                        <label for="Name" class="block mb-2 text-sm font-medium text-gray-900">Your
-                            Name</label>
-                        <input type="text" id="Name"
+                <form @submit.prevent="submitForm" class="max-w-md mx-auto">
+                    <!-- Radio Buttons -->
+                    <div class="flex">
+                        <div class="flex items-center me-4 w-2/4 border p-3 rounded-lg">
+                            <input id="software-radio" type="radio" value="software" v-model="selectedCategory"
+                                @change="updateCategoryOptionsFromRadio" name="category-group"
+                                class="w-4 h-4 text-blue-600" />
+                            <label for="software-radio"
+                                class="ms-2 text-base font-medium text-gray-900">Software</label>
+                        </div>
+                        <div class="flex items-center me-4 w-2/4 border p-3 rounded-lg">
+                            <input id="website-radio" type="radio" value="website" v-model="selectedCategory"
+                                @change="updateCategoryOptionsFromRadio" name="category-group"
+                                class="w-4 h-4 text-blue-600" />
+                            <label for="website-radio" class="ms-2 text-base font-medium text-gray-900">Website</label>
+                        </div>
+                        <div class="flex items-center me-4 w-2/4 border p-3 rounded-lg">
+                            <input id="others-radio" type="radio" value="others" v-model="selectedCategory"
+                                @change="updateCategoryOptionsFromRadio" name="category-group"
+                                class="w-4 h-4 text-blue-600" />
+                            <label for="others-radio" class="ms-2 text-base font-medium text-gray-900">Others</label>
+                        </div>
+                    </div>
+
+                    <!-- Select Dropdown -->
+                    <div v-if="selectedCategory !== 'others'" class="my-5">
+                        <label for="category-select" class="block mb-2 text-sm font-medium text-gray-900">Select
+                            Category</label>
+                        <select id="category-select"
+                            class="block w-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg"
+                            v-model="selectedCategoryFromDropdown" @change="updateCategoryOptionsFromDropdown">
+                            <option selected disabled>Choose a category</option>
+                            <option v-for="option in categoryOptions" :key="option.id" :value="option.id">
+                                {{ option.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Software Category (Visible after selecting 'Software' radio button) -->
+                    <div v-if="selectedCategory === 'software'" class="my-5">
+                        <label for="software-category" class="block mb-2 text-sm font-medium text-gray-900">Software
+                            For</label>
+                        <select id="software-category"
+                            class="block w-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg"
+                            v-model="selectedSoftwareCategory">
+                            <option selected disabled>Choose a category</option>
+                            <option v-for="option in softwareCategory" :key="option.id" :value="option.id">
+                                {{ option.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Other's Category Input -->
+                    <div v-if="selectedCategory === 'others'" class="mb-5 mt-5">
+                        <label for="otherCategory" class="block mb-2 text-sm font-medium text-gray-900">Subject</label>
+                        <input type="text" id="otherCategory"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
+                            placeholder="Submit Your Category"
+                            v-model="formData.otherCategory" />  <!-- Bind to formData.otherCategory -->
+                    </div>
+
+                    <div class="mb-5 mt-5">
+                        <label for="Name" class="block mb-2 text-sm font-medium text-gray-900">Your Name</label>
+                        <input type="text" id="Name" v-model="formData.name"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
                             placeholder="name" required />
                     </div>
                     <div class="mb-5">
-                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Your
-                            email</label>
-                        <input type="email" id="email"
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Your email</label>
+                        <input type="email" id="email" v-model="formData.email"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  w-full p-2.5"
                             placeholder="name@flowbite.com" required />
                     </div>
 
                     <div class="mb-5">
-                        <label for="number" class="block mb-2 text-sm font-medium text-gray-900 ">
-                            Contact No</label>
-                        <input type="number" id="number"
+                        <label for="number" class="block mb-2 text-sm font-medium text-gray-900 ">Contact No</label>
+                        <input type="text" id="number" v-model="formData.number"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                             placeholder="Contact number" required />
                     </div>
 
                     <div class="mb-5">
-                        <label for="location" class="block mb-2 text-sm font-medium text-gray-900">
-                            Address</label>
-                        <input type="location" id="location"
+                        <label for="location" class="block mb-2 text-sm font-medium text-gray-900">Address</label>
+                        <input type="location" id="location" v-model="formData.location"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
                             placeholder="Addresss" required />
                     </div>
 
                     <div class="mb-5">
-                        <form class="max-w-sm mx-auto">
-                            <label for="message" class="block mb-2 text-sm font-medium text-gray-900">Your
-                                message</label>
-                            <textarea id="message" rows="4"
-                                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
-                                placeholder="Leave a comment..."></textarea>
-                        </form>
+                        <label for="message" class="block mb-2 text-sm font-medium text-gray-900">Your message</label>
+                        <textarea id="message" v-model="formData.message" rows="4"
+                            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+                            placeholder="Leave a comment..."></textarea>
                     </div>
 
                     <button type="submit"
@@ -147,44 +342,53 @@ onMounted(async () => {
 
             <!-- =================company-info============= -->
             <div class="cumpany-info lg:w-[80%] lg:ml-28 lg:h-auto lg:mt-10 lg:pb-5 lg:pt-5 pb-5 px-5 lg:px-8 pt-5">
-                <div class="pt-4">
-                    <h2 class="text-center text-2xl font-semibold"><span class="text-[#48a1da]">{{ data.data[1].location }}</span></h2>
-                    <p class="text-sm mt-4 font-medium"><i class="fa-solid fa-location-pin text-[#ef4444]"></i> ADDRESS:
-                        <span class="text-lg">Bin Zafar Building, Shop No-03, Eyal Nasser, Deira, Naif, Dubai, United
-                            Arab Emirates.</span>
-                    </p>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-phone text-[#ef4444]"></i>
-                        +990 85440 12453
-                    </p>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-envelope text-[#ef4444]"></i> Email:
-                        <span>doofazinfo@gmail.com</span>
-                    </p>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-envelope text-[#ef4444]"></i> Emai:
-                        <span>info@doofazit.com</span>
-                    </p>
+                <!-- Position 2 -->
+                <div v-if="locationDetails && locationDetails.data">
+                    <div v-for="(details, index) in filteredLocationDetailsPosition2" :key="index" class="pt-4">
+                        <h2 class="text-center text-2xl font-semibold">
+                            <span class="text-[#48a1da]">{{ details.locationId }}</span>
+                        </h2>
+
+                        <span>
+                            <span>
+                                <p class="text-sm mt-4 font-medium flex justify-start items-baseline gap-2">
+                                    <i class="fa-solid fa-location-pin text-[#ef4444]"></i>
+                                    <span class="text-lg">{{ details.address }}</span>
+                                </p>
+                                <p class="text-md mt-3 font-medium" v-html="details.details"></p>
+                            </span>
+                        </span>
+                    </div>
                 </div>
-                <div class="pt-4">
-                    <h2 class="text-center text-2xl font-semibold"><span class="text-[#48a1da]">{{ data.data[2].location }}</span>
-                    </h2>
-                    <p class="text-sm mt-4 font-medium"><i class="fa-solid fa-location-pin text-[#ef4444]"></i> ADDRESS:
-                        <span class="text-lg">21/34, Moo-5, Nangprue Banglamung, Chonburi-20150, Thailand.</span>
-                    </p>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-phone text-[#ef4444]"></i>
-                        +990 85440 12453
-                    </p>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-envelope text-[#ef4444]"></i> Emai:
-                        <span>doofazinfo@gmail.com</span>
-                    </p>
-                    <p class="text-md mt-4 font-medium"><i class="fa-solid fa-envelope text-[#ef4444]"></i> Emai:
-                        <span>info@doofazit.com</span>
-                    </p>
+                <!-- Position 2 -->
+
+                <!-- Position 3 -->
+                <div v-if="locationDetails && locationDetails.data">
+                    <div v-for="(details, index) in filteredLocationDetailsPosition3" :key="index" class="pt-4">
+                        <h2 class="text-center text-2xl font-semibold">
+                            <span class="text-[#48a1da]">{{ details.locationId }}</span>
+                        </h2>
+
+                        <span>
+                            <span>
+                                <p class="text-sm mt-4 font-medium flex justify-start items-baseline gap-2">
+                                    <i class="fa-solid fa-location-pin text-[#ef4444]"></i>
+                                    <span class="text-lg">{{ details.address }}</span>
+                                </p>
+                                <p class="text-md mt-3 font-medium" v-html="details.details"></p>
+                            </span>
+                        </span>
+                    </div>
                 </div>
+                <!-- Position 3 -->
             </div>
             <!-- =================company-info End============= -->
 
         </div>
         <!-- ====================informetion-area End==================== -->
     </section>
+
+    <div id="toast-container" class="fixed top-2/4 left-[40%]"></div>
 
 </template>
 

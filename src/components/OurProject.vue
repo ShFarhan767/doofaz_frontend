@@ -98,7 +98,7 @@ const handleTabChange = (tabId) => {
                         <div v-for="(item, index) in content" :key="index" class="text-center">
                             <!-- Conditionally show shortTitle if it's not the "All" tab -->
                             <div class="flex justify-center overflow-hidden">
-                                <RouterLink :to="{ path: '/website-visual', query: { iframe: item.projectUrl } }"
+                                <RouterLink :to="{ path: '/website-development', query: { iframe: item.projectUrl } }"
                                     class="project-container w-11/12 min-h-[500px] bg-no-repeat bg-cover relative"
                                     :style="{ backgroundImage: `url(${IMG + item.projectImage})` }">
                                     <div

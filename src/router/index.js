@@ -7,19 +7,22 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: () => import("../views/HomePage.vue"),
+      meta: { title: "Best IT Farm Company in Bangladesh" }, // Title for Home page
     },
     {
       path: "/payment",
       name: "payment",
       component: () => import("../views/PaymentView.vue"),
+      meta: { title: "Make Your Payment Hassle Free" }, // Title for Home page
     },
     {
-      path: "/blog",
+      path: "/Info-Tech-Blog",
       name: "blog",
       component: () => import("../views/BlogContentview.vue"),
+      meta: { title: "Info Tech Blog | Latest Insights and Updates" },
     },
     {
-      path: "/blog-details",
+      path: "/Latest-Blog/:slug",
       name: "blog-details",
       component: () => import("../views/BlogDetailsView.vue"),
     },
@@ -29,17 +32,27 @@ const router = createRouter({
       component: () => import("../views/DriverView.vue"),
     },
     {
-      path: "/driver-details",
+      path: "/Digital-Device/:slug",
       name: "driver-details",
       component: () => import("../views/DriverDetailsView.vue"),
     },
     {
-      path: "/software-details/:id",
+      path: "/category-details/:slug",
+      name: "category-details",
+      component: () => import("../views/CategoryDetailsView.vue"),
+    },
+    {
+      path: "/:slug",
       name: "software-details",
       component: () => import("../views/SoftwareTypeDetailsView.vue"),
     },
     {
-      path: "/website-details/:id",
+      path: "/Software-Development/:slug",
+      name: "software-category",
+      component: () => import("../views/SoftwareCategoryView.vue"),
+    },
+    {
+      path: "/website-details/:slug",
       name: "website-details",
       component: () => import("../views/WebsiteTypeDetailsView.vue"),
     },
@@ -47,26 +60,31 @@ const router = createRouter({
       path: "/contact",
       name: "contact",
       component: () => import("../views/ContactPage.vue"),
+      meta: { title: "Contact Us | Get in Touch With Us" },
     },
     {
-      path: "/Message",
+      path: "/DoofazITLimited-founder-message",
       name: "Message",
       component: () => import("../views/MessageFounderPage.vue"),
+      meta: { title: "Founder's Message | Doofaz IT Limited" },
     },
     {
       path: "/Client",
       name: "Client",
       component: () => import("../views/Clientpages.vue"),
+      meta: { title: "Our Trusted Clients & Partners | Doofaz IT Limited" },
     },
     {
-      path: "/Company",
+      path: "/DoofazITLimited-Profile",
       name: "Company",
       component: () => import("../views/CompanyPage.vue"),
+      meta: { title: "Doofaz IT Limited | Company Profile Overview" },
     },
     {
-      path: "/project",
+      path: "/Doofaz-Group",
       name: "project",
       component: () => import("../views/ProjectPage.vue"),
+      meta: { title: "Our Projects | Doofaz Group for a Better Tomorrow" },
     },
     {
       path: "/ERPSolution",
@@ -129,7 +147,7 @@ const router = createRouter({
       component: () => import("../views/CrmPage.vue"),
     },
     {
-      path: "/website-visual",
+      path: "/website-development",
       name: "Website-Visual",
       component: () => import("../views/WebsiteVisualView.vue"),
     },
@@ -138,15 +156,15 @@ const router = createRouter({
       name: "GoogleMap-Visual",
       component: () => import("../views/GoogleMapVisualView.vue"),
     },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import('../views/AboutView.vue')
-    // }
   ],
+});
+
+// Use a navigation guard to update the document title when the route changes
+router.afterEach((to) => {
+  // Check if the route has a meta title defined
+  if (to.meta.title) {
+    document.title = to.meta.title;
+  }
 });
 
 export default router
