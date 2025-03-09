@@ -7,7 +7,6 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: () => import("../views/HomePage.vue"),
-      meta: { title: "Best IT Farm Company in Bangladesh" }, // Title for Home page
     },
     {
       path: "/payment",
@@ -155,6 +154,12 @@ const router = createRouter({
       path: "/googleMap-visual",
       name: "GoogleMap-Visual",
       component: () => import("../views/GoogleMapVisualView.vue"),
+    },
+    {
+      path: "/Landing-Page",
+      name: "Landing-Page",
+      component: () => import("../views/LandingPageView.vue"),
+      meta: { title: "Best Web Design & Development Company" },
     },
   ],
 });

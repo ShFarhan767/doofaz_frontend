@@ -184,7 +184,7 @@ function formatDate(dateString) {
                 <div class="grid grid-cols-4 gap-5 mt-10">
                     <div v-if="loading" v-for="n in 4" :key="n" class="skeleton-more-blog"></div>
                     <div v-else v-for="blog in moreBlogs" :key="blog.id" class="blog-entry shadow pb-5 pt-2 px-2 hover:shadow-lg">
-                        <RouterLink :to="{ name: 'Latest-Blog', params: { slug: blog.slug } }">
+                        <RouterLink :to="{ name: 'blog-details', params: { slug: blog.slug } }">
                             <div class="">
                                 <img :src="IMG + blog.Image" class="rounded-t-lg min-h-[180px] max-h-[180px] w-full" alt="">
                             </div>

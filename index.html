@@ -1,23 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" type="image/png" href="src/assets/fav-icon/images1111.jpg"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
-    <title>Doofaz IT Limited</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@latest" defer></script>
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Doofaz IT Limited – The leading IT solutions provider in Bangladesh, offering expert website development, e-commerce solutions, digital marketing, software development, and innovative tech services to help businesses grow online." />
+  <meta name="keywords" content="IT company in Bangladesh, best IT farm in Bangladesh, website development, e-commerce solutions, software development, digital marketing, tech solutions, IT services, custom software, mobile app development, web design agency Bangladesh, SEO services, cloud solutions, IT consultancy" />
+  <link rel="shortcut icon" type="image/png" href="src/assets/fav-icon/images1111.jpg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" />
+  <title>Doofaz IT Limited</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@latest" defer></script>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+  <script>
+    async function fetchMetaData() {
+      try {
+        const API_URL = "https://demo.doofazit.com/api/metaSetupInfo";
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
+        console.log("API Response:", data);
+
+        if (data?.data?.length > 0) {
+          const metaInfo = data.data[0];
+
+          if (metaInfo.metaTitle) {
+            document.title = metaInfo.metaTitle;
+          }
+
+          let metaDescription = document.querySelector('meta[name="description"]');
+          if (!metaDescription) {
+            metaDescription = document.createElement("meta");
+            metaDescription.name = "description";
+            document.head.appendChild(metaDescription);
+          }
+          if (metaInfo.metaDescription) {
+            metaDescription.setAttribute("content", metaInfo.metaDescription);
+          }
+
+          let metaKeywords = document.querySelector('meta[name="keywords"]');
+          if (!metaKeywords) {
+            metaKeywords = document.createElement("meta");
+            metaKeywords.name = "keywords";
+            document.head.appendChild(metaKeywords);
+          }
+          if (metaInfo.metaKeyword) {
+            metaKeywords.setAttribute("content", metaInfo.metaKeyword);
+          }
+
+          console.log("Updated Meta Description:", metaDescription.getAttribute("content"));
+          console.log("Updated Meta Keywords:", metaKeywords.getAttribute("content"));
+        } else {
+          console.warn("No metadata found in API response.");
+        }
+      } catch (error) {
+        console.error("Error fetching meta data:", error);
+      }
+    }
+
+    fetchMetaData();
+  </script>
+</body>
+
 </html>

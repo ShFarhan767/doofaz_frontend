@@ -305,7 +305,7 @@ const Navbar = [
 <template>
   <mobileNavbar></mobileNavbar>
 
-  <nav id="myNavbar" class="hidden lg:block bg-white z-40 lg:fixed w-full p-2 top-0 h-auto">
+  <nav id="myNavbar" class="hidden lg:block bg-white z-40 lg:fixed w-full p-2 top-0 h-auto shadow-md">
     <div v-for="(navbars, index) in Navbar" :key="index"
       class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto lg:p-2">
       <RouterLink v-if="data && data.data" to="/">
@@ -449,7 +449,7 @@ const Navbar = [
           <!-- =================================Website End========================== -->
 
           <li>
-            <RouterLink to="/payment"
+            <RouterLink to="/Landing-Page"
               class="router block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 hover:text-[#48a1da] md:p-0 font-semibold lg:text-[22px]">
               Landing Page
             </RouterLink>

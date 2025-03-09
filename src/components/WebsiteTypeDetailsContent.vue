@@ -136,7 +136,7 @@ onMounted(() => {
         <section>
             <div class="container mx-auto">
                 <div class="flex justify-center lg:mt-10 mt-5">
-                    <h2 class="py-2 text-white text-3xl font-medium text-center w-72 bg-[#48A1DA] rounded">Related Software</h2>
+                    <h2 class="py-2 text-white text-3xl font-medium text-center w-auto px-4 bg-[#48A1DA] rounded">Related Website Type</h2>
                 </div>
                 <div v-if="websiteType && websiteType.data"
                     class="grid lg:gap-x-8 gap-4 lg:gap-y-7 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 lg:mt-[30px] py-6">

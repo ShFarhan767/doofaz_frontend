@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
 import { IMG } from '../assets/imageUrl';
 import { BASE_URL } from '../assets/apiConfig';
+import { useRouter } from 'vue-router';
 
 const data = ref(null);
 
@@ -28,6 +29,7 @@ onMounted(async () => {
     }
 });
 
+const packageName = ref("");
 const selectedCategory = ref('');
 const selectedCategoryFromDropdown = ref(null);
 const categoryOptions = ref([]);
@@ -82,12 +84,6 @@ const updateCategoryOptionsFromRadio = () => {
     }
 };
 
-// const updateCategoryOptionsFromDropdown = () => {
-//     if (selectedCategoryFromDropdown.value) {
-//         selectedCategory.value = null; // Reset radio buttons when dropdown is selected
-//     }
-// };
-
 // Computed property to filter items with position "1"
 const filteredLocationDetails = computed(() => {
     return locationDetails.value?.data?.filter(item => item.position === "1") || [];
@@ -125,43 +121,60 @@ const formData = ref({
     number: '',
     location: '',
     message: '',
-    otherCategory: ''
+    otherCategory: '',
+    packageName: packageName.value, // Store packageName in formData
 });
+
+// Load data from localStorage when the component mounts
+onMounted(() => {
+    const storedPackage = localStorage.getItem("selectedPackage");
+    const storedCategory = localStorage.getItem("selectedCategory");
+
+    if (storedPackage) {
+        formData.value.packageName = storedPackage; // Prefill package name
+    }
+
+    if (storedCategory === "package") {
+        selectedCategory.value = "package"; // Auto-select package radio button
+    }
+});
+
+// Watch for changes in formData and store in localStorage
+watch(formData, (newVal) => {
+    localStorage.setItem("formData", JSON.stringify(newVal));
+}, { deep: true });
 
 const submitForm = async () => {
     try {
         const response = await axios.post(`${BASE_URL}formData`, {
             ...formData.value,
             selectedCategory: selectedCategory.value,
-            selectedCategoryFromDropdown: String(selectedCategoryFromDropdown.value),  // Convert to string
-            selectedSoftwareCategory: String(selectedSoftwareCategory.value),  // Convert to string
-            otherCategory: formData.value.otherCategory,
-            number: String(formData.value.number)  // Convert to string
+            selectedCategoryFromDropdown: String(selectedCategoryFromDropdown.value),
+            selectedSoftwareCategory: String(selectedSoftwareCategory.value),
+            number: String(formData.value.number)
         });
 
-        // Handle success response (e.g., show a message to the user)
         console.log(response);
 
-        
-        // Reset all form fields after successful submission
+        // Clear localStorage and reset form fields after successful submission
+        localStorage.removeItem("formData");
+
         formData.value = {
-            name: '',
-            email: '',
-            number: '',
-            location: '',
-            message: '',
-            otherCategory: ''
+            name: "",
+            email: "",
+            number: "",
+            location: "",
+            message: "",
+            otherCategory: "",
+            packageName: ""
         };
-        
-        // Reset the other selected fields
-        selectedCategory.value = ''; // Reset selectedCategory
-        selectedCategoryFromDropdown.value = ''; // Reset selectedCategoryFromDropdown
-        selectedSoftwareCategory.value = ''; // Reset selectedSoftwareCategory
-        
-        showToast();
+        selectedCategory.value = "";
+        selectedCategoryFromDropdown.value = "";
+        selectedSoftwareCategory.value = "";
+
+        showToast(); // Display success message
     } catch (error) {
-        // Handle error response (e.g., show an error message)
-        alert('An error occurred while submitting the form');
+        alert("An error occurred while submitting the form");
         console.error(error);
     }
 };
@@ -201,10 +214,10 @@ function showToast() {
 
     <section v-if="data && data.data" class="bg-[#d8dfe0]">
         <!-- ====================informetion-area==================== -->
-        <div class="lg:px-20 grid gap-x-8 gap-y-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:pb-12">
+        <div class="lg:px-10 grid lg:grid-cols-4 lg:gap-5 grid-cols-1 lg:pb-12 mx-auto">
 
             <!-- =================company-info============= -->
-            <div class="cumpany-info lg:w-[80%] lg:h-auto lg:mt-10 lg:pb-5 lg:pt-5 pb-5 px-5 pt-5">
+            <div class="cumpany-info p-5 m-5 lg:m-0 lg:mt-10">
 
                 <!-- Position 1 -->
                 <div v-if="locationDetails && locationDetails.data">
@@ -234,38 +247,56 @@ function showToast() {
                     </p>
                 </div>
             </div>
-            <!-- =================company-info End============= -->
+            <!-- Company-Info End -->
 
-            <!-- =================form-info============= -->
-            <div class="form-area lg:w-[150%] lg:h-auto lg:mt-10 lg:pb-5 lg:pt-5 pb-5 px-5 pt-5 lg:-ml-20">
-                <form @submit.prevent="submitForm" class="max-w-md mx-auto">
+            <!-- Form Start Here -->
+            <div class="form-area col-span-2 lg:h-auto lg:mt-10 lg:pb-5 lg:pt-5 pb-5 px-5 pt-5 mx-5">
+                <form @submit.prevent="submitForm" class="mx-auto max-w-xl">
                     <!-- Radio Buttons -->
-                    <div class="flex">
-                        <div class="flex items-center me-4 w-2/4 border p-3 rounded-lg">
+                    <div class="lg:flex flex-nowrap">
+                        <!-- Software Radio Button -->
+                        <div
+                            class="flex items-center me-4 w-full sm:w-2/4 md:w-2/4 lg:w-2/4 border p-3 rounded-lg mb-4 sm:mb-0">
                             <input id="software-radio" type="radio" value="software" v-model="selectedCategory"
                                 @change="updateCategoryOptionsFromRadio" name="category-group"
                                 class="w-4 h-4 text-blue-600" />
                             <label for="software-radio"
                                 class="ms-2 text-base font-medium text-gray-900">Software</label>
                         </div>
-                        <div class="flex items-center me-4 w-2/4 border p-3 rounded-lg">
+
+                        <!-- Website Radio Button -->
+                        <div
+                            class="flex items-center me-4 w-full sm:w-2/4 md:w-2/4 lg:w-2/4 border p-3 rounded-lg mb-4 sm:mb-0">
                             <input id="website-radio" type="radio" value="website" v-model="selectedCategory"
                                 @change="updateCategoryOptionsFromRadio" name="category-group"
                                 class="w-4 h-4 text-blue-600" />
                             <label for="website-radio" class="ms-2 text-base font-medium text-gray-900">Website</label>
                         </div>
-                        <div class="flex items-center me-4 w-2/4 border p-3 rounded-lg">
+
+                        <!-- Others Radio Button -->
+                        <div
+                            class="flex items-center me-4 w-full sm:w-2/4 md:w-2/4 lg:w-2/4 border p-3 rounded-lg mb-4 sm:mb-0">
                             <input id="others-radio" type="radio" value="others" v-model="selectedCategory"
                                 @change="updateCategoryOptionsFromRadio" name="category-group"
                                 class="w-4 h-4 text-blue-600" />
                             <label for="others-radio" class="ms-2 text-base font-medium text-gray-900">Others</label>
                         </div>
+
+                        <!-- Landing Page Radio Button -->
+                        <div
+                            class="flex items-center me-4 w-full sm:w-2/4 md:w-2/4 lg:w-2/4 border p-3 rounded-lg mb-4 sm:mb-0">
+                            <input id="package-radio" type="radio" value="package" v-model="selectedCategory"
+                                name="category-group" class="w-4 h-4 text-blue-600" />
+                            <label for="package-radio" class="ms-2 text-base font-medium text-gray-900">Landing
+                                Page</label>
+                        </div>
                     </div>
 
                     <!-- Select Dropdown -->
-                    <div v-if="selectedCategory !== 'others'" class="my-5">
-                        <label for="category-select" class="block mb-2 text-sm font-medium text-gray-900">Select
-                            Category</label>
+                    <div v-if="selectedCategory !== 'others' && selectedCategory !== 'package'" class="my-5">
+                        <label for="category-select" class="block mb-2 text-sm font-medium text-gray-900">
+                            Select Category
+                        </label>
                         <select id="category-select"
                             class="block w-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg"
                             v-model="selectedCategoryFromDropdown" @change="updateCategoryOptionsFromDropdown">
@@ -295,8 +326,17 @@ function showToast() {
                         <label for="otherCategory" class="block mb-2 text-sm font-medium text-gray-900">Subject</label>
                         <input type="text" id="otherCategory"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
-                            placeholder="Submit Your Category"
-                            v-model="formData.otherCategory" />  <!-- Bind to formData.otherCategory -->
+                            placeholder="Submit Your Category" v-model="formData.otherCategory" />
+                        <!-- Bind to formData.otherCategory -->
+                    </div>
+
+                    <!-- Show Package Name if 'Package' is Selected -->
+                    <div class="mb-5 mt-5" v-if="selectedCategory === 'package'">
+                        <label for="packageName" class="block mb-2 text-sm font-medium text-gray-900">Selected
+                            Package</label>
+                        <input type="text" id="packageName" v-model="formData.packageName"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5"
+                            readonly />
                     </div>
 
                     <div class="mb-5 mt-5">
@@ -338,10 +378,10 @@ function showToast() {
                 </form>
 
             </div>
-            <!-- =================form-info End============= -->
+            <!-- Form End Here -->
 
             <!-- =================company-info============= -->
-            <div class="cumpany-info lg:w-[80%] lg:ml-28 lg:h-auto lg:mt-10 lg:pb-5 lg:pt-5 pb-5 px-5 lg:px-8 pt-5">
+            <div class="cumpany-info p-5 m-5 lg:m-0 lg:mt-10">
                 <!-- Position 2 -->
                 <div v-if="locationDetails && locationDetails.data">
                     <div v-for="(details, index) in filteredLocationDetailsPosition2" :key="index" class="pt-4">
